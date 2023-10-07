@@ -11,7 +11,7 @@ from pytils.translit import slugify
 # NULLABLE = {'blank':True, 'null': True}
 
 
-class habit_guide (models.Model):
+class Habit_guide (models.Model):
     objects = None
     action = models.TextField(max_length=1000, verbose_name='действие', unique=True, **NULLABLE)
     is_useful = models.BooleanField(default=False, verbose_name='признак полезной привычки')
@@ -35,7 +35,7 @@ class habit_guide (models.Model):
 
 
 
-class habit_user(models.Model):
+class Habit_user(models.Model):
     objects = None
     email = models.ForeignKey(User, on_delete=models.CASCADE,  default='mail', verbose_name='почта_пользователя')
     place = models.CharField(max_length=150,  unique=True, default='', verbose_name='место')
