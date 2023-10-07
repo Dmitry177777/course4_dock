@@ -14,8 +14,9 @@ from pytils.translit import slugify
 class habit_guide (models.Model):
     objects = None
     action = models.TextField(max_length=1000, verbose_name='действие', unique=True, **NULLABLE)
-    is_nice = models.BooleanField(default=True, verbose_name='признак приятной привычки')
-    is_useful = models.BooleanField(default=True, verbose_name='признак полезной привычки')
+    is_useful = models.BooleanField(default=False, verbose_name='признак полезной привычки')
+    is_nice = models.BooleanField(default=False, verbose_name='признак приятной привычки')
+
 
     is_activ = models.BooleanField(default=True, verbose_name='признак активной привычки')
 
@@ -24,30 +25,13 @@ class habit_guide (models.Model):
         verbose_name_plural = 'Привычки'
 
     def __str__(self):
-        return f'{self.action}: {self.is_nice}: {self.is_useful}'
+        return f'{self.action}: {self.is_useful}: {self.is_nice}'
 
 
     def delete(self, *args, **kwargs):
         self.is_activ = False
         self.save()
 
-
-class habit_associated (models.Model):
-    objects = None
-    associated_action = models.TextField(max_length=1000, verbose_name='связанное действие', unique=True, **NULLABLE)
-
-    is_activ = models.BooleanField(default=True, verbose_name='признак активной привычки')
-
-    class Meta:
-        verbose_name = 'Связанная привычка'
-        verbose_name_plural = 'Связанные привычки'
-
-    def __str__(self):
-        return f'{self.associated_action}'
-
-    def delete(self, *args, **kwargs):
-        self.is_activ = False
-        self.save()
 
 
 
@@ -57,12 +41,12 @@ class habit_user(models.Model):
     place = models.CharField(max_length=150,  unique=True, default='', verbose_name='место')
     date_of_habit = models.DateTimeField(**NULLABLE, verbose_name='время выполнения привычки')
 
-    action = models.ForeignKey(habit_guide, on_delete=models.CASCADE,  verbose_name='действие', **NULLABLE)
-    associated_action = models.ForeignKey(habit_associated, on_delete=models.CASCADE,  verbose_name='связанное действие', **NULLABLE)
+    action = models.ForeignKey(habit_guide, to_field='action', on_delete=models.CASCADE,  verbose_name='действие', **NULLABLE)
+    associated_action = models.ForeignKey(habit_guide, to_field='action', related_name='associated_action', on_delete=models.CASCADE,  verbose_name='связанное действие', **NULLABLE)
 
-    periodicity = models.CharField(max_length=150,  default='Ежедневно', verbose_name='Периодичность')
+    periodicity = models.DurationField(verbose_name='Периодичность' , **NULLABLE)
     reward = models.CharField(max_length=150, default='Благодарность', verbose_name='Вознаграждение')
-    time_to_complete = models.DateTimeField(**NULLABLE, verbose_name='время на выполнение привычки')
+    time_to_complete = models.DurationField(**NULLABLE, verbose_name='время на выполнение привычки')
 
     is_public = models.BooleanField (default=False, verbose_name='признак публичной привычки')
     is_activ = models.BooleanField(default=True, verbose_name='признак активной привычки')
