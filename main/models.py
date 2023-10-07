@@ -41,8 +41,8 @@ class Habit_user(models.Model):
     place = models.CharField(max_length=150,  unique=True, default='', verbose_name='место')
     date_of_habit = models.DateTimeField(**NULLABLE, verbose_name='время выполнения привычки')
 
-    action = models.ForeignKey(habit_guide, to_field='action', on_delete=models.CASCADE,  verbose_name='действие', **NULLABLE)
-    associated_action = models.ForeignKey(habit_guide, to_field='action', related_name='associated_action', on_delete=models.CASCADE,  verbose_name='связанное действие', **NULLABLE)
+    action = models.ForeignKey(Habit_guide, to_field='action', on_delete=models.CASCADE,  verbose_name='действие', **NULLABLE)
+    associated_action = models.ForeignKey(Habit_guide, to_field='action', related_name='associated_action', on_delete=models.CASCADE,  verbose_name='связанное действие', **NULLABLE)
 
     periodicity = models.DurationField(verbose_name='Периодичность' , **NULLABLE)
     reward = models.CharField(max_length=150, default='Благодарность', verbose_name='Вознаграждение')

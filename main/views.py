@@ -4,7 +4,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.urls import path, include
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from main.models import habit_guide, Habit_user
+from main.models import Habit_guide, Habit_user
 from rest_framework.response import Response
 
 # from main.paginators import MainPaginator
@@ -18,7 +18,7 @@ from users.models import UserRoles
 
 class HabitGuideViewSet(viewsets.ModelViewSet):
     serializer_class = HabitGuideVSerializer
-    queryset = habit_guide.objects.all()
+    queryset = Habit_guide.objects.all()
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['well_name', 'payment_method']
     ordering_fields = ['date_of_payment']
