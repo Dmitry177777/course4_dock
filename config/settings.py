@@ -126,6 +126,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Настройки JWT-токенов
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
+
+# Настройки срока действия токенов
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+STRIPE_CREATE_URL = 'https://api.stripe.com/v1/payment_intents'
+STRIPE_RETRIEVE_URL = 'https://api.stripe.com/v1/payment_intents/pi_1Gt09Z2eZvKYlo2C8ZiS4b2r'
+STRIPE_AUTH ='pk_test_51Nnm8HFlTYpLw2PHisnKZg3IOPQIqzPH8YJeZ6LGBtrBs6IcYJFNukq638cCIg9f6qhnoEVpJwwGBvJCIIo5duPT005Jyp2pZy'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

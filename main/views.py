@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from main.models import Habit_guide, Habit_user
 from rest_framework.response import Response
 
+from main.paginators import MainPaginator
+from main.permissions import IsModerator, IsHabitUserOwner
 # from main.paginators import MainPaginator
 # from main.permissions import IsLessonOwner, IsModerator
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer
@@ -29,37 +31,36 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
 
 class HabitUserCreateAPIView(generics.CreateAPIView):
     serializer_class = HabitUserSerializer
-#     permission_classes = [IsAuthenticated]
-#     read_only = True
-#
-#
-#
+    permission_classes = [IsAuthenticated]
+    read_only = True
+
+
 class HabitUserListAPIView(generics.ListAPIView):
     serializer_class = HabitUserSerializer
+    read_only = True
     queryset = Habit_user.objects.all()
-#     permission_classes = [AllowAny]
-#     # permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
-#     pagination_class = MainPaginator
-#
-#     def get_queryset (self):
-#         user=self.request.user
-#         role=self.request.user.role
-#         if role == UserRoles.MODERATOR:
-#             return Lesson.objects.all()
-#         else:
-#             return Lesson.objects.filter(owner=user)
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+    pagination_class = MainPaginator
+
+    def get_queryset (self):
+        user=self.request.user
+        role=self.request.user.role
+        if role == UserRoles.MODERATOR:
+            return Habit_user.objects.all()
+        else:
+            return Habit_user.objects.filter(owner=user)
 #
 #
 class HabitUserRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
-#     permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
-#
-#
+    permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+
 class HabitUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
-#     permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
+    permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
 #
 #
 #     def perform_update(self, serializer):
@@ -70,8 +71,10 @@ class HabitUserUpdateAPIView(generics.UpdateAPIView):
 class HabitUserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
-#     permission_classes = [IsAuthenticated, IsLessonOwner]
-#
+    permission_classes = [IsAuthenticated, IsHabitUserOwner]
+
+
+
 #
 #
 #
