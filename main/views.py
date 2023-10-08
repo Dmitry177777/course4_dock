@@ -20,8 +20,8 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
     serializer_class = HabitGuideVSerializer
     queryset = Habit_guide.objects.all()
     filter_backends = [SearchFilter, OrderingFilter]
-    search_fields = ['well_name', 'payment_method']
-    ordering_fields = ['date_of_payment']
+    search_fields = ['is_useful', 'is_nice']
+    ordering_fields = ['action']
     # permission_classes = [IsAuthenticated]
 
 

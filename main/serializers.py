@@ -13,7 +13,7 @@ class HabitGuideVSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habit_guide
-        fields = ["id", "action", "is_useful", "is_nice"]
+        fields = ["id", "action", "is_useful", "is_nice", "is_activ"]
         # validators = [lesson_linkValidator(field='lesson_link')]
 
 
