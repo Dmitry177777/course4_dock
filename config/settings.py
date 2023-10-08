@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     #install
     'rest_framework',
     'rest_framework_simplejwt',
+    #телеграм
+    'telegram_bot',
+
     # 'drf_yasg',
     # 'django_celery_beat',
 
@@ -93,7 +96,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 PostgreSQL_Key = os.getenv('PostgreSQL_Key')
-
+TELEGRAM_BOT_API_KEY=os.getenv('TELEGRAM_BOT_API_KEY')
 
 
 DATABASES = {

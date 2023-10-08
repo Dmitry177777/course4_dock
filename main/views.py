@@ -12,6 +12,7 @@ from main.permissions import IsModerator, IsHabitUserOwner
 
 # from main.permissions import IsLessonOwner, IsModerator
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer
+from main.tasks_celery import send_telegram_confirmation
 # from django.shortcuts import get_object_or_404
 
 # from main.tasks_celery import send_email_confirmation
@@ -40,6 +41,7 @@ class HabitUserCreateAPIView(generics.CreateAPIView):
 
         # Create a 'Habit_user' instance with the 'email' field associated with the user
         serializer.save(email=user_instance)
+        send_telegram_confirmation(Habit_user, user_instance)
 
 
 class HabitUserListAPIView(generics.ListAPIView):
