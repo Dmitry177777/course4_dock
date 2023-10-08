@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 import datetime
 from telebot import TeleBot
+# from main.telegram_bot import TelegramModule
 from main.models import Habit_user, Habit_guide
 from users.models import User
 
@@ -20,17 +21,20 @@ def send_telegram_confirmation(Habit_user, user_instance):
     message_text = f"Привет {user_instance}, у Вас добавлена новая привычка: {action}. Перечень активных привычек: {instance}"
     send_telegram_message.delay(user_instance, message_text)
 
-
 @shared_task
-def send_telegram_periodicity(Habit_user, user_instance):
-    # определение наименования курса в котором обновлен урок
-    action = Habit_user.action(pk=Habit_user.pk)
-    # отфильтрова подписчиков на курс в которм поменялся урок
-    instance = Habit_user.objects.filter(email = user_instance)
+def check_periodicity():
+    #текущее время
+    today = datetime.datetime.now()
 
-
-    message_text = f"Привет {user_instance}, у Вас добавлена новая привычка: {action}. Перечень активных привычек: {instance}"
-    send_telegram_message.delay(user_instance, message_text)
+    instance = User.objects.all()
+    for  i in instance:
+        # Определение разницы даты последнего входа пользователя и текущей даты
+        time_diff = today-i.last_login
+        tdays = time_diff.days
+        if tdays > 31:
+            i.is_activ = False
+            i.save()
+            print(f'Пользователь {i.email} не активен уже {tdays} дней. Аккаунт переведен в неактивные')
 
 
 @shared_task
@@ -39,7 +43,7 @@ def send_telegram_message(user_instance, message_text):
         bot.send_message(user_instance, message_text)
     except Exception as e:
         # Обработка ошибок отправки сообщения, если необходимо
-
+        print(e)
 
 
 
@@ -67,26 +71,26 @@ def send_telegram_message(user_instance, message_text):
 #             message=f'Мы обновили содержание курса {well_name}, прошу ознакомиться',
 #             from_email=from_email,
 #             recipient_list=[settings.EMAIL_MODERATOR]
-        )
+#         )
 
 
-@shared_task
-def check_last_login():
-    #текущее время
-    today = datetime.datetime.now()
-
-    instance = User.objects.all()
-    for  i in instance:
-        # Определение разницы даты последнего входа пользователя и текущей даты
-        time_diff = today-i.last_login
-        tdays = time_diff.days
-        if tdays > 31:
-            i.is_activ = False
-            i.save()
-            print(f'Пользователь {i.email} не активен уже {tdays} дней. Аккаунт переведен в неактивные')
-
-
-
+# @shared_task
+# def check_last_login():
+#     #текущее время
+#     today = datetime.datetime.now()
+#
+#     instance = User.objects.all()
+#     for  i in instance:
+#         # Определение разницы даты последнего входа пользователя и текущей даты
+#         time_diff = today-i.last_login
+#         tdays = time_diff.days
+#         if tdays > 31:
+#             i.is_activ = False
+#             i.save()
+#             print(f'Пользователь {i.email} не активен уже {tdays} дней. Аккаунт переведен в неактивные')
+#
+#
+#
 
 # import datetime
 #

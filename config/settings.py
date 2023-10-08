@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     #телеграм
-    'telegram_bot',
+    # 'telegram_bot',
 
     # 'drf_yasg',
     # 'django_celery_beat',

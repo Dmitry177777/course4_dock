@@ -35,6 +35,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
     username = None
     email = models.EmailField(verbose_name='почта', unique=True)
+    telegram_id = models.IntegerField(verbose_name='id телеграмм', **NULLABLE, unique=True)
     password = models.CharField(verbose_name='пароль', max_length=200, )
     is_active = models.BooleanField(default=False)
     role = models.CharField(max_length=9, choices=UserRoles.choices, default=UserRoles.MEMBER)
