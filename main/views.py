@@ -3,13 +3,13 @@ from rest_framework import viewsets, generics, routers
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.urls import path, include
 from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from django.contrib.auth.models import User
 from main.models import Habit_guide, Habit_user
 from rest_framework.response import Response
 
 from main.paginators import MainPaginator
 from main.permissions import IsModerator, IsHabitUserOwner
-# from main.paginators import MainPaginator
+
 # from main.permissions import IsLessonOwner, IsModerator
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer
 # from django.shortcuts import get_object_or_404
@@ -32,7 +32,14 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
 class HabitUserCreateAPIView(generics.CreateAPIView):
     serializer_class = HabitUserSerializer
     permission_classes = [IsAuthenticated]
-    read_only = True
+    # read_only = True
+
+    def perform_create(self, serializer):
+        # Get the currently authenticated user
+        user_instance = self.request.user
+
+        # Create a 'Habit_user' instance with the 'email' field associated with the user
+        serializer.save(email=user_instance)
 
 
 class HabitUserListAPIView(generics.ListAPIView):
@@ -47,11 +54,12 @@ class HabitUserListAPIView(generics.ListAPIView):
         user=self.request.user
         role=self.request.user.role
         if role == UserRoles.MODERATOR:
-            return Habit_user.objects.all()
+            return Habit_user.objects.filter(is_public=True)
         else:
-            return Habit_user.objects.filter(owner=user)
-#
-#
+            return Habit_user.objects.filter(email=user)
+
+
+
 class HabitUserRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()

@@ -24,7 +24,10 @@ class HabitUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habit_user
+        # Указываем поля, которые не должны отображаться
+        # exclude = ('email', 'owner')
         fields = '__all__'
+        # read_only_fields = ('email',)
 #
 #     """создание платежа"""
 #     def get_payment_create(self, instance):

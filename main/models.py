@@ -35,7 +35,7 @@ class Habit_guide(models.Model):
 
 class Habit_user(models.Model):
     objects = None
-    email = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='почта_пользователя')
+    email = models.ForeignKey(User, on_delete=models.CASCADE,  **NULLABLE, verbose_name='почта_пользователя')
     place = models.CharField(max_length=150, default='Здесь и сейчас', verbose_name='место')
     date_of_habit = models.DateTimeField(**NULLABLE, default=timezone.now,
                                          verbose_name='время выполнения привычки')
@@ -50,7 +50,6 @@ class Habit_user(models.Model):
     reward = models.CharField(max_length=150, default=None, verbose_name='Вознаграждение', **NULLABLE)
     time_to_complete = models.DurationField(**NULLABLE, default=timedelta(minutes=2), verbose_name='время на выполнение привычки')
 
-    owner = models.ForeignKey("users.User", on_delete=models.CASCADE, null=False, related_name='owner')
 
     is_public = models.BooleanField(default=False, verbose_name='признак публичной привычки')
     is_activ = models.BooleanField(default=True, verbose_name='признак активной привычки')
