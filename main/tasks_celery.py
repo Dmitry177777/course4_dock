@@ -10,21 +10,23 @@ from users.models import User
 # Объявление переменной бота
 bot = TeleBot(settings.TELEGRAM_BOT_API_KEY)
 
-@shared_task
-def send_telegram_confirmation(Habit_user, user_instance):
-    # определение наименования курса в котором обновлен урок
-    action = Habit_user.action(pk=Habit_user.pk)
-    # отфильтрова подписчиков на курс в которм поменялся урок
-    instance = Habit_user.objects.filter(email = user_instance)
+def send_telegram_confirmation(user_instance):
+    try:
+        # определение новой привычки
+        latest_habit_user = Habit_user.objects.filter(email=user_instance).latest('created_at')
+        action = latest_habit_user.action  # отфильтрова подписчиков на курс в которм поменялся урок
+    except Habit_user.DoesNotExist:
+        action = "No action found"  # Handle the case when no Habit_user is found
 
-
-    message_text = f"Привет {user_instance}, у Вас добавлена новая привычка: {action}. Перечень активных привычек: {instance}"
+    message_text = f"Привет {user_instance.email}, у Вас добавлена новая привычка: {action}."
     send_telegram_message.delay(user_instance, message_text)
+
 
 @shared_task
 def check_periodicity():
     #текущее время
     today = datetime.datetime.now()
+    Habit_user
 
     instance = User.objects.all()
     for  i in instance:
@@ -35,12 +37,14 @@ def check_periodicity():
             i.is_activ = False
             i.save()
             print(f'Пользователь {i.email} не активен уже {tdays} дней. Аккаунт переведен в неактивные')
+        message_text = f"Привет {user_instance.email}, у Вас добавлена новая привычка: {action}. Перечень активных привычек: {instance}"
+        send_telegram_message.delay(user_instance, message_text)
 
 
 @shared_task
 def send_telegram_message(user_instance, message_text):
     try:
-        bot.send_message(user_instance, message_text)
+        bot.send_message(user_instance.telegram_id, message_text)
     except Exception as e:
         # Обработка ошибок отправки сообщения, если необходимо
         print(e)

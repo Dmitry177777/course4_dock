@@ -41,7 +41,7 @@ class HabitUserCreateAPIView(generics.CreateAPIView):
 
         # Create a 'Habit_user' instance with the 'email' field associated with the user
         serializer.save(email=user_instance)
-        send_telegram_confirmation(Habit_user, user_instance)
+        send_telegram_confirmation(user_instance)
 
 
 class HabitUserListAPIView(generics.ListAPIView):
