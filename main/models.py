@@ -42,7 +42,7 @@ class Habit_user(models.Model):
     #default=datetime.now().date(),
 
     action = models.ForeignKey(Habit_guide, to_field='action', related_name='action_fk', on_delete=models.CASCADE,
-                               verbose_name='действие', **NULLABLE)
+                               verbose_name='действие', unique=True)
     associated_action = models.ForeignKey(Habit_guide, to_field='action', related_name='associated_action_fk',
                                           on_delete=models.CASCADE, verbose_name='связанное действие', **NULLABLE)
 

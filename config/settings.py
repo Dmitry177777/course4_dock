@@ -46,11 +46,14 @@ INSTALLED_APPS = [
     #install
     'rest_framework',
     'rest_framework_simplejwt',
+
     #телеграм
     # 'telegram_bot',
+    #документация
+    'drf_yasg',
 
-    # 'drf_yasg',
-    # 'django_celery_beat',
+    #celery
+    'django_celery_beat',
 
     #myapp
     'users',
@@ -65,11 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #drf
-    # 'rest_framework.middleware.AuthenticationMiddleware',
-    # 'rest_framework.middleware.AuthorizationMiddleware',
-
-]
+  ]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -171,3 +170,42 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+############ redis ##############
+
+CACHES = {
+    "default": {
+        "BACKEND":	"django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        }
+    }
+
+# Настройки для брокера Redis
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+
+# Настройки для Celery
+# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Настройки для Celery периодические задачи
+CELERY_BEAT_SCHEDULE = {
+    'check_last_login': {
+        'task': 'main.tasks_celery.check_periodicity',  # Путь к задаче
+        'schedule': timedelta(minutes=60*24),  # Расписание выполнения задачи (например, каждые сутки)
+    },
+}
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = 'redis://localhost:6379' # Например, Redis, который по умолчанию работает на порту 6379
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+# Часовой пояс для работы Celery
+# CELERY_TIMEZONE = "Australia/Tasmania"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
