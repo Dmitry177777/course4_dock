@@ -13,9 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 bot = TeleBot(settings.TELEGRAM_BOT_API_KEY)
 
 
+
 def send_telegram_confirmation(user_instance):
     try:
-        latest_habit_user = Habit_user.objects.filter(email=user_instance).latest('date_of_habit')
+        latest_habit_user = Habit_user.objects.filter(email=user_instance.email).latest('date_of_habit')
         action = latest_habit_user.action
     except ObjectDoesNotExist:
         action = "No action found"
@@ -25,8 +26,6 @@ def send_telegram_confirmation(user_instance):
 
     message_text = f"Hello {serialized_user['email']}, you have a new habit: {action}."
     send_telegram_message.delay(serialized_user, message_text)
-
-
 
 
 
