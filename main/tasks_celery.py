@@ -1,8 +1,8 @@
 from celery import shared_task
 from django.conf import settings
-from django.core.mail import send_mail
-from  datetime import  datetime, timedelta
-from telebot import TeleBot
+# from django.core.mail import send_mail
+from datetime import  datetime, timedelta
+import telepot
 # from main.telegram_bot import TelegramModule
 from main.models import Habit_user, Habit_guide
 from users.models import User
@@ -10,10 +10,11 @@ from .serializers import UserSerializer
 from django.core.exceptions import ObjectDoesNotExist
 
 # Объявление переменной бота
-bot = TeleBot(settings.TELEGRAM_BOT_API_KEY)
+# bot_url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={TELEGRAM_CHANNEL}&text={TEXT}'
+bot = telepot.Bot(settings.TELEGRAM_BOT_API_KEY)
 
 
-
+@shared_task
 def send_telegram_confirmation(user_instance):
     try:
         latest_habit_user = Habit_user.objects.filter(email=user_instance.email).latest('date_of_habit')
