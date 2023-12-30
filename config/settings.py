@@ -24,7 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ix_ge=(r_nl8*s5*2w5f6jkn%t*^q(o=z8etg=9fhj)!2w-z*h'
+# SECRET_KEY = 'django-insecure-ix_ge=(r_nl8*s5*2w5f6jkn%t*^q(o=z8etg=9fhj)!2w-z*h'
+SECRET_KEY = load_dotenv('SECRET_KEY'),  # take environment variables from .env.
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -107,7 +109,7 @@ BD_NAME = load_dotenv('BD_NAME')  # take environment variables from .env.
 BD_USER = load_dotenv('BD_USER')  # take environment variables from .env.
 BD_PASSWORD = load_dotenv('BD_PASSWORD')  # take environment variables from .env.
 BD_HOST = load_dotenv('BD_HOST')  # take environment variables from .env.
-BD_PORT = load_dotenv('BD_PORT')  # take environment variables from .env.
+BD_PORT = load_dotenv('BD_PORT'),  # take environment variables from .env.
 
 
 
