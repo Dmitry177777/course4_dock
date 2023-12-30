@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     #celery
     'django_celery_beat',
 
+    #cors
+    'corsheaders',
+
     #myapp
     'users',
     'main',
@@ -68,6 +71,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # cors
+    'corsheaders.middleware.CorsMiddleware',
   ]
 
 ROOT_URLCONF = 'config.urls'
@@ -209,3 +215,12 @@ CELERY_TASK_TRACK_STARTED = True
 
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
+
+#CORS
+CORS_ALLOWED_ORIGINS = [  '<http://localhost:8000>',  # Замените на адрес вашего фронтенд-сервера
+]
+
+CSRF_TRUSTED_ORIGINS = [ "https://read-and-write.example.com", #  Замените на адрес вашего фронтенд-сервера   # и добавьте адрес бэкенд-сервера
+]
+
+CORS_ALLOW_ALL_ORIGINS = False # В этом примере 'http://localhost:8000'  — это адрес вашего фронтенд-сервера. Замените его на адрес своего фронтенд-сервера или '*' , если вы хотите разрешить запросы от любого домена.
