@@ -73,7 +73,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # cors
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
   ]
 
 ROOT_URLCONF = 'config.urls'
@@ -217,10 +218,10 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 #CORS
-CORS_ALLOWED_ORIGINS = [  '<http://localhost:8000>',  # Замените на адрес вашего фронтенд-сервера
+CORS_ALLOWED_ORIGINS = [  '<https://localhost:8000>',  # Замените на адрес вашего фронтенд-сервера  #'http://localhost:8000'  # это адрес вашего фронтенд-сервера. Замените его на адрес своего фронтенд-сервера или '*' , если вы хотите разрешить запросы от любого домена.
 ]
 
 CSRF_TRUSTED_ORIGINS = [ "https://read-and-write.example.com", #  Замените на адрес вашего фронтенд-сервера   # и добавьте адрес бэкенд-сервера
 ]
 
-CORS_ALLOW_ALL_ORIGINS = '*'  #'http://localhost:8000'  # это адрес вашего фронтенд-сервера. Замените его на адрес своего фронтенд-сервера или '*' , если вы хотите разрешить запросы от любого домена.
+CORS_ALLOW_ALL_ORIGINS = False
