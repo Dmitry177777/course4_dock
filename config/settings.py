@@ -102,25 +102,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-PSQL_NAME = load_dotenv('PSQL_NAME')  # take environment variables from .env.
-PSQL_USER = load_dotenv('PSQL_USER')  # take environment variables from .env.
-PSQL_PASSWORD = load_dotenv('PSQL_PASSWORD')  # take environment variables from .env.
-TELEGRAM_BOT_API_KEY = load_dotenv('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
+BD_ENGINE = load_dotenv('BD_ENGINE')  # take environment variables from .env.
+BD_NAME = load_dotenv('BD_NAME')  # take environment variables from .env.
+BD_USER = load_dotenv('BD_USER')  # take environment variables from .env.
+BD_PASSWORD = load_dotenv('BD_PASSWORD')  # take environment variables from .env.
+BD_HOST = load_dotenv('BD_HOST')  # take environment variables from .env.
+BD_PORT = load_dotenv('BD_PORT')  # take environment variables from .env.
+
+
 
 # PostgreSQL_Key = os.getenv('PostgreSQL_Key')
 # TELEGRAM_BOT_API_KEY=os.getenv('TELEGRAM_BOT_API_KEY')
 
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': PSQL_NAME,
-        'USER': PSQL_USER,
-        'PASSWORD': PSQL_PASSWORD,
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'ENGINE': BD_ENGINE,
+        'NAME': BD_NAME,
+        'USER': BD_USER,
+        'PASSWORD': BD_PASSWORD,
+        'HOST': BD_HOST,
+        'PORT': BD_PORT
     }
 }
+
+
 
 
 # Password validation
