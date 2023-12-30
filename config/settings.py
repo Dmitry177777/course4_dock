@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 from django.conf.global_settings import LOGIN_URL
 
 
@@ -101,8 +102,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-PostgreSQL_Key = os.getenv('PostgreSQL_Key')
-TELEGRAM_BOT_API_KEY=os.getenv('TELEGRAM_BOT_API_KEY')
+PostgreSQL_Key=load_dotenv('PostgreSQL_Key')  # take environment variables from .env.
+TELEGRAM_BOT_API_KEY=load_dotenv('TELEGRAM_BOT_API_KEY')
+
+# PostgreSQL_Key = os.getenv('PostgreSQL_Key')
+# TELEGRAM_BOT_API_KEY=os.getenv('TELEGRAM_BOT_API_KEY')
 
 
 DATABASES = {
