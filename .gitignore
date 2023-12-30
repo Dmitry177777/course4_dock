@@ -136,3 +136,5 @@ dmypy.json
 
 /env/
 /env/
+/env/lib/
+/env/lib/python3.10/
