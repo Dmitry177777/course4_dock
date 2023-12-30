@@ -1,3 +1,4 @@
+import os
 from celery import shared_task
 from django.conf import settings
 # from django.core.mail import send_mail
@@ -12,7 +13,8 @@ from dotenv import load_dotenv
 
 # Объявление переменной бота
 # bot_url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={TELEGRAM_CHANNEL}&text={TEXT}'
-TELEGRAM_BOT_API_KEY = load_dotenv('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
+load_dotenv()
+TELEGRAM_BOT_API_KEY = os.environ.get('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
 bot = telepot.Bot(TELEGRAM_BOT_API_KEY)
 
 

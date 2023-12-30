@@ -25,7 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-ix_ge=(r_nl8*s5*2w5f6jkn%t*^q(o=z8etg=9fhj)!2w-z*h'
-SECRET_KEY = load_dotenv('SECRET_KEY'),  # take environment variables from .env.
+
+load_dotenv()
+
+SECRET_KEY = os.environ.get('SECRET_KEY')  # take environment variables from .env.
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -103,13 +106,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-BD_ENGINE = load_dotenv('BD_ENGINE')  # take environment variables from .env.
-BD_NAME = load_dotenv('BD_NAME')  # take environment variables from .env.
-BD_USER = load_dotenv('BD_USER')  # take environment variables from .env.
-BD_PASSWORD = load_dotenv('BD_PASSWORD')  # take environment variables from .env.
-BD_HOST = load_dotenv('BD_HOST')  # take environment variables from .env.
-BD_PORT = load_dotenv('BD_PORT'),  # take environment variables from .env.
+# take environment variables from .env.
+BD_ENGINE = os.environ.get('BD_ENGINE')
+BD_NAME = os.environ.get('BD_NAME')
+BD_USER = os.environ.get('BD_USER')
+BD_PASSWORD = os.environ.get('BD_PASSWORD')
+BD_HOST = os.environ.get('BD_HOST')
+BD_PORT = os.environ.get('BD_PORT')
 
 
 
