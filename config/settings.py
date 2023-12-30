@@ -102,8 +102,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-PostgreSQL_Key = load_dotenv('PostgreSQL_Key')  # take environment variables from .env.
-TELEGRAM_BOT_API_KEY = load_dotenv('TELEGRAM_BOT_API_KEY')
+PSQL_NAME = load_dotenv('PSQL_NAME')  # take environment variables from .env.
+PSQL_USER = load_dotenv('PSQL_USER')  # take environment variables from .env.
+PSQL_PASSWORD = load_dotenv('PSQL_PASSWORD')  # take environment variables from .env.
+TELEGRAM_BOT_API_KEY = load_dotenv('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
 
 # PostgreSQL_Key = os.getenv('PostgreSQL_Key')
 # TELEGRAM_BOT_API_KEY=os.getenv('TELEGRAM_BOT_API_KEY')
@@ -112,9 +114,9 @@ TELEGRAM_BOT_API_KEY = load_dotenv('TELEGRAM_BOT_API_KEY')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'course3',
-        'USER': 'postgres',
-        'PASSWORD': PostgreSQL_Key,
+        'NAME': PSQL_NAME,
+        'USER': PSQL_USER,
+        'PASSWORD': PSQL_PASSWORD,
         'HOST': '127.0.0.1',
         'PORT': '5432'
     }
@@ -192,8 +194,8 @@ CACHES = {
     }
 
 # Настройки для брокера Redis
-REDIS_HOST = 'localhost'
-REDIS_PORT = 6379
+REDIS_HOST = load_dotenv('REDIS_HOST')
+REDIS_PORT = load_dotenv('REDIS_PORT')
 
 # Настройки для Celery
 # CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
