@@ -3,7 +3,7 @@ from celery import shared_task
 from django.conf import settings
 # from django.core.mail import send_mail
 from datetime import  datetime, timedelta
-import telepot
+import telebot
 # from main.telegram_bot import TelegramModule
 from main.models import Habit_user, Habit_guide
 from users.models import User
@@ -15,7 +15,9 @@ from dotenv import load_dotenv
 # bot_url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={TELEGRAM_CHANNEL}&text={TEXT}'
 load_dotenv()
 TELEGRAM_BOT_API_KEY = os.environ.get('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
-bot = telepot.Bot(TELEGRAM_BOT_API_KEY)
+bot = telebot.TeleBot(TELEGRAM_BOT_API_KEY)
+
+
 
 
 @shared_task
@@ -37,26 +39,32 @@ def send_telegram_confirmation(user_instance):
 
 @shared_task
 def check_periodicity():
-    # Получаем текущую дату
-    today = datetime.now().date()
-    # Получаем объект Habit_user только активные позиции
-    instance = Habit_user.objects.filter(is_activ=True)
+    # # Получаем текущую дату
+    # today = datetime.now().date()
+    # # Получаем объект Habit_user только активные позиции
+    # instance = Habit_user.objects.filter(is_activ=True)
 
-    # проходим циклом по всем привычкам
-    for  i in instance:
-        # Определение разницы даты последнего входа пользователя и текущей даты
-        time_diff = today-i.date_of_habit
-        tdays = time_diff.days
-        # если разница больше запускается уведомление о времени выполнения действия
-        if timedelta(days=tdays) > i.periodicity:
-            # дата выполнения привычки меняется на текущую
-            i.date_of_habit = today
-            i.save()
-            user_instance = User.objects.filter(email=i.email)
-            action=instance.action
-            message_text = f"Привет {user_instance.email}, пора выполнить следующее действие: {action}."
-            #вызавыется функция рассылки
-            send_telegram_message.delay(user_instance, message_text)
+    # Тест telegramm
+    message_text = f"Привет k1779@mail.ru, пора выполнить следующее действие: Провести активацию."
+    telegram_id = 21439303
+    # вызавыется функция рассылки
+    bot.send_message(telegram_id, message_text)
+
+        # # проходим циклом по всем привычкам
+        # for  i in instance:
+        #     # Определение разницы даты последнего входа пользователя и текущей даты
+        #     time_diff = today-i.date_of_habit
+        #     tdays = time_diff.days
+        #     # если разница больше запускается уведомление о времени выполнения действия
+        #     if timedelta(days=tdays) > i.periodicity:
+        #         # дата выполнения привычки меняется на текущую
+        #         i.date_of_habit = today
+        #         i.save()
+        #         user_instance = User.objects.filter(email=i.email)
+        #         action=instance.action
+        #         message_text = f"Привет {user_instance.email}, пора выполнить следующее действие: {action}."
+        #         #вызавыется функция рассылки
+        #         send_telegram_message.delay(user_instance, message_text)
 
 
 @shared_task

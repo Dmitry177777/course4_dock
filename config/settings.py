@@ -214,7 +214,7 @@ REDIS_PORT = load_dotenv('REDIS_PORT')
 CELERY_BEAT_SCHEDULE = {
     'check_last_login': {
         'task': 'main.tasks_celery.check_periodicity',  # Путь к задаче
-        'schedule': timedelta(minutes=60*24),  # Расписание выполнения задачи (например, каждые сутки)
+        'schedule': timedelta(minutes=1),  # Расписание выполнения задачи (например, каждые сутки)
     },
 }
 
@@ -231,7 +231,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_TASK_TRACK_STARTED = True
 
 # Максимальное время на выполнение задачи
-CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_TASK_TIME_LIMIT = 1
 
 #CORS
 CORS_ALLOWED_ORIGINS = [  'https://localhost:8000',  # Замените на адрес вашего фронтенд-сервера  #'http://localhost:8000'  # это адрес вашего фронтенд-сервера. Замените его на адрес своего фронтенд-сервера или '*' , если вы хотите разрешить запросы от любого домена.
