@@ -1,10 +1,7 @@
 import os
 from celery import shared_task
-from django.conf import settings
-# from django.core.mail import send_mail
-from datetime import  datetime, timedelta
 import telebot
-# from main.telegram_bot import TelegramModule
+
 from main.models import Habit_user, Habit_guide
 from users.models import User
 from .serializers import UserSerializer
@@ -12,12 +9,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from dotenv import load_dotenv
 
 # Объявление переменной бота
-# bot_url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage?chat_id={TELEGRAM_CHANNEL}&text={TEXT}'
 load_dotenv()
 TELEGRAM_BOT_API_KEY = os.environ.get('TELEGRAM_BOT_API_KEY') # take environment variables from .env.
 bot = telebot.TeleBot(TELEGRAM_BOT_API_KEY)
-
-
 
 
 @shared_task
