@@ -1,5 +1,4 @@
 from django.core.serializers import serialize
-from django.http import JsonResponse
 from rest_framework import serializers
 import json
 
@@ -22,9 +21,7 @@ class HabitGuideVSerializer(serializers.ModelSerializer):
         # validators = [lesson_linkValidator(field='lesson_link')]
 
 
-
 class HabitUserSerializer(serializers.ModelSerializer):
-
 
     class Meta:
         model = Habit_user
@@ -40,22 +37,16 @@ class HabitUserSerializer(serializers.ModelSerializer):
             # Получаем сет объектов QuerySet
             response = instance.lesson_set.all()
             # Сериализуем объкты QuerySet в формат Json
-            serialized_data = serialize("json", response, use_natural_foreign_keys=True)
+            serialized_data = serialize(
+                "json", response, use_natural_foreign_keys=True)
             serialized_data = json.loads(serialized_data)
             return serialized_data
         else:
-            #Получаем сет объектов QuerySet
+            # Получаем сет объектов QuerySet
             response = instance.lesson_set.filter(owner=user).all()
-            #Сериализуем объкты QuerySet в формат Json
-            serialized_data = serialize("json", response, use_natural_foreign_keys=True)
+            # Сериализуем объкты QuerySet в формат Json
+            serialized_data = serialize(
+                "json", response, use_natural_foreign_keys=True)
             serialized_data = json.loads(serialized_data)
 
             return serialized_data
-#
-
-
-
-
-
-
-
