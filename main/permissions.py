@@ -1,6 +1,5 @@
-from rest_framework.permissions import  BasePermission
+from rest_framework.permissions import BasePermission
 
-from main.models import Habit_user
 from users.models import UserRoles
 
 
@@ -11,6 +10,7 @@ class IsModerator(BasePermission):
         if request.user.role == UserRoles.MODERATOR:
             return True
         return False
+
 
 class IsHabitUserOwner(BasePermission):
     message = "Вы не являетесь владельцем!"
