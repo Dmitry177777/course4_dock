@@ -1,24 +1,15 @@
-from datetime import date, timedelta, datetime
+from datetime import timedelta
 from django.utils import timezone
 from users.models import User, NULLABLE
-import schedule
-from django.core.mail import EmailMessage
 from django.db import models
-from django.urls import reverse
 from django.core.exceptions import ValidationError
-# from django.utils.text import slugify
-from pytils.translit import slugify
-
-
 # NULLABLE = {'blank':True, 'null': True}
-
 
 class Habit_guide(models.Model):
     objects = None
     action = models.TextField(max_length=1000, verbose_name='действие', unique=True, **NULLABLE)
     is_useful = models.BooleanField(default=False, verbose_name='признак полезной привычки')
     is_nice = models.BooleanField(default=False, verbose_name='признак приятной привычки')
-
     is_activ = models.BooleanField(default=True, verbose_name='признак активной привычки')
 
     class Meta:
@@ -39,7 +30,7 @@ class Habit_user(models.Model):
     place = models.CharField(max_length=150, default='Здесь и сейчас', verbose_name='место')
     date_of_habit = models.DateTimeField(**NULLABLE, default=timezone.now,
                                          verbose_name='время выполнения привычки')
-    #default=datetime.now().date(),
+
 
     action = models.ForeignKey(Habit_guide, to_field='action', related_name='action_fk', on_delete=models.CASCADE,
                                verbose_name='действие', unique=True)

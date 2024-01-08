@@ -53,8 +53,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
-    #телеграм
-    # 'telegram_bot',
     #документация
     'drf_yasg',
 

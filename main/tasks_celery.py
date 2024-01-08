@@ -41,21 +41,21 @@ def check_periodicity():
     instance = Habit_user.objects.filter(is_activ=True)
 
 
-        # проходим циклом по всем привычкам
-        for  i in instance:
-            # Определение разницы даты последнего входа пользователя и текущей даты
-            time_diff = today-i.date_of_habit
-            tdays = time_diff.days
-            # если разница больше запускается уведомление о времени выполнения действия
-            if timedelta(days=tdays) > i.periodicity:
-                # дата выполнения привычки меняется на текущую
-                i.date_of_habit = today
-                i.save()
-                user_instance = User.objects.filter(email=i.email)
-                action=instance.action
-                message_text = f"Привет {user_instance.email}, пора выполнить следующее действие: {action}."
-                #вызавыется функция рассылки
-                send_telegram_message.delay(user_instance, message_text)
+    # проходим циклом по всем привычкам
+    for  i in instance:
+        # Определение разницы даты последнего входа пользователя и текущей даты
+        time_diff = today-i.date_of_habit
+        tdays = time_diff.days
+        # если разница больше запускается уведомление о времени выполнения действия
+        if timedelta(days=tdays) > i.periodicity:
+            # дата выполнения привычки меняется на текущую
+            i.date_of_habit = today
+            i.save()
+            user_instance = User.objects.filter(email=i.email)
+            action=instance.action
+            message_text = f"Привет {user_instance.email}, пора выполнить следующее действие: {action}."
+            #вызавыется функция рассылки
+            send_telegram_message.delay(user_instance, message_text)
 
 
 @shared_task
