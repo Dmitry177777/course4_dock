@@ -1,21 +1,15 @@
 
-from rest_framework import viewsets, generics, routers
+from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
-from django.urls import path, include
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
 from main.models import Habit_guide, Habit_user
-from rest_framework.response import Response
 
 from main.paginators import MainPaginator
 from main.permissions import IsModerator, IsHabitUserOwner
 
-# from main.permissions import IsLessonOwner, IsModerator
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer
 from main.tasks_celery import send_telegram_confirmation
-# from django.shortcuts import get_object_or_404
 
-# from main.tasks_celery import send_email_confirmation
 from users.models import UserRoles
 
 
@@ -28,8 +22,6 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticated]
 
 
-
-
 class HabitUserCreateAPIView(generics.CreateAPIView):
     serializer_class = HabitUserSerializer
     permission_classes = [IsAuthenticated]
@@ -39,7 +31,8 @@ class HabitUserCreateAPIView(generics.CreateAPIView):
         # Get the currently authenticated user
         user_instance = self.request.user
 
-        # Create a 'Habit_user' instance with the 'email' field associated with the user
+        # Create a 'Habit_user' instance with the
+        # 'email' field associated with the user
         serializer.save(email=user_instance)
         send_telegram_confirmation(user_instance)
 
@@ -52,20 +45,20 @@ class HabitUserListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
     pagination_class = MainPaginator
 
-    def get_queryset (self):
-        user=self.request.user
-        role=self.request.user.role
+    def get_queryset(self):
+        user = self.request.user
+        role = self.request.user.role
         if role == UserRoles.MODERATOR:
             return Habit_user.objects.filter(is_public=True)
         else:
             return Habit_user.objects.filter(email=user)
 
 
-
 class HabitUserRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+
 
 class HabitUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = HabitUserSerializer
@@ -75,15 +68,14 @@ class HabitUserUpdateAPIView(generics.UpdateAPIView):
 #
 #     def perform_update(self, serializer):
 #         instance = serializer.save()
-#         send_email_confirmation(lesson=instance.lesson_name, well_id=instance.well_name_id)
-#
+#         send_email_confirmation(
+#         lesson=instance.lesson_name, well_id=instance.well_name_id)
+
 
 class HabitUserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsHabitUserOwner]
-
-
 
 #
 #
