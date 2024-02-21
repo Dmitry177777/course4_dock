@@ -1,16 +1,46 @@
 
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from main.models import Habit_guide, Habit_user
 
 from main.paginators import MainPaginator
 from main.permissions import IsModerator, IsHabitUserOwner
 
-from main.serializers import HabitGuideVSerializer, HabitUserSerializer
+from main.serializers import HabitGuideVSerializer, HabitUserSerializer, UserSerializer
 from main.tasks_celery import send_telegram_confirmation
 
 from users.models import UserRoles
+from rest_framework.response import Response
+from rest_framework import status
+
+
+class UserCreateAPIView(generics.CreateAPIView):
+    """
+    Разрешить всем пользователям (аутентифицированным и нет) доступ к данному эндпоинту.
+    """
+    permission_classes = [AllowAny]
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        # Get the currently authenticated user
+        user_instance = self.request.user
+
+        # Create a 'Habit_user' instance with the
+        # 'email' field associated with the user
+        serializer.save(email=user_instance)
+        send_telegram_confirmation(user_instance)
+
+    # def post(self, request):
+    #     user = request.data.get('user', {})
+    #
+    #     # Паттерн создания сериализатора, валидации и сохранения - довольно
+    #     # стандартный, и его можно часто увидеть в реальных проектах.
+    #     serializer = self.serializer_class(data=user)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class HabitGuideViewSet(viewsets.ModelViewSet):
@@ -19,7 +49,7 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['is_useful', 'is_nice']
     ordering_fields = ['action']
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class HabitUserCreateAPIView(generics.CreateAPIView):

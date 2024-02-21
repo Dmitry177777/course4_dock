@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter
 
 from main.views import (
     HabitGuideViewSet,
+    UserCreateAPIView,
     HabitUserCreateAPIView,
     HabitUserListAPIView,
     HabitUserRetrieveAPIView,
@@ -17,8 +18,11 @@ app_name = MainConfig.name
 router = DefaultRouter()
 router.register(r'Habit', HabitGuideViewSet, basename='habit')
 
-
 urlpatterns = [
+    path('user/create/',
+         UserCreateAPIView.as_view(),
+         name='user-create'),
+
     path('habit_user/create/',
          HabitUserCreateAPIView.as_view(),
          name='habit_user-create'),

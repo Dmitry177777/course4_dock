@@ -2,15 +2,30 @@ from django.core.serializers import serialize
 from rest_framework import serializers
 import json
 
+from rest_framework.permissions import AllowAny
+
 from main.models import Habit_guide, Habit_user
 
 from users.models import User, UserRoles
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """ Сериализация регистрации пользователя и создания нового. """
+
+
+    # Клиентская сторона не должна иметь возможность отправлять токен вместе с
+    # запросом на регистрацию. Сделаем его доступным только на чтение.
+    token = serializers.CharField(max_length=255, read_only=True)
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['email', 'telegram_id', 'password', 'token']
+        permission_classes = [AllowAny]
+
+    def create(self, validated_data):
+        # Использовать метод create_user, который мы
+        # написали ранее, для создания нового пользователя.
+        return User.objects.create_user(**validated_data)
 
 
 class HabitGuideVSerializer(serializers.ModelSerializer):
