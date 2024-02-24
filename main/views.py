@@ -2,7 +2,7 @@
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from main.models import Habit_guide, Habit_user
+from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
 from main.permissions import IsModerator, IsHabitUserOwner
@@ -22,14 +22,14 @@ class UserCreateAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
 
-    # def perform_create(self, serializer):
-    #     # Get the currently authenticated user
-    #     user_instance = self.request.user
-    #
-    #     # Create a 'Habit_user' instance with the
-    #     # 'email' field associated with the user
-    #     serializer.save(email=user_instance)
-    #     send_telegram_confirmation(user_instance)
+    def perform_create(self, serializer):
+        # Get the currently authenticated user
+        user_instance = self.request.user
+
+        # Create a 'Habit_user' instance with the
+        # 'email' field associated with the user
+        serializer.save(email=user_instance)
+        send_telegram_confirmation(user_instance)
 
     # def post(self, request):
     #     user = request.data.get('user', {})
@@ -41,6 +41,23 @@ class UserCreateAPIView(generics.CreateAPIView):
     #     serializer.save()
     #
     #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserListAPIView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    read_only = True
+    queryset = User.objects.all()
+    permission_classes = [AllowAny]
+    # permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+    pagination_class = MainPaginator
+
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     role = self.request.user.role
+    #     if role == UserRoles.MODERATOR:
+    #         return User.objects.filter(is_public=True)
+    #     else:
+    #         return User.objects.filter(email=user)
 
 
 class HabitGuideViewSet(viewsets.ModelViewSet):

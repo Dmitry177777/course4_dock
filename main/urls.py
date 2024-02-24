@@ -10,7 +10,7 @@ from main.views import (
     HabitUserListAPIView,
     HabitUserRetrieveAPIView,
     HabitUserUpdateAPIView,
-    HabitUserDestroyAPIView
+    HabitUserDestroyAPIView, UserListAPIView
 )
 
 app_name = MainConfig.name
@@ -22,6 +22,9 @@ urlpatterns = [
     path('user/create/',
          UserCreateAPIView.as_view(),
          name='user-create'),
+    path('user/list/',
+         UserListAPIView.as_view(),
+         name='user-list'),
 
     path('habit_user/create/',
          HabitUserCreateAPIView.as_view(),
