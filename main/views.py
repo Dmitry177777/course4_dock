@@ -22,14 +22,14 @@ class UserCreateAPIView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
 
-    def perform_create(self, serializer):
-        # Get the currently authenticated user
-        user_instance = self.request.user
-
-        # Create a 'Habit_user' instance with the
-        # 'email' field associated with the user
-        serializer.save(email=user_instance)
-        send_telegram_confirmation(user_instance)
+    # def perform_create(self, serializer):
+    #     # Get the currently authenticated user
+    #     user_instance = self.request.user
+    #
+    #     # Create a 'Habit_user' instance with the
+    #     # 'email' field associated with the user
+    #     serializer.save(email=user_instance)
+    #     send_telegram_confirmation(user_instance)
 
     # def post(self, request):
     #     user = request.data.get('user', {})
