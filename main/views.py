@@ -1,7 +1,9 @@
-
+from django.core.serializers import serialize
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.utils import json
+
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
@@ -26,7 +28,7 @@ class UserCreateAPIView(generics.CreateAPIView):
         # Get the currently authenticated user
         user_instance = self.request.user
 
-        # Create a 'Habit_user' instance with the
+        # Create a 'User' instance with the
         # 'email' field associated with the user
         serializer.save(email=user_instance)
         send_telegram_confirmation(user_instance)
@@ -45,14 +47,19 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = UserSerializer
-    queryset = Habit_user.objects.all()
-    permission_classes = [IsAuthenticated, IsModerator | IsUserOwner]
-#
-#
-#     def perform_update(self, serializer):
-#         instance = serializer.save()
-#         send_email_confirmation(
-#         lesson=instance.lesson_name, well_id=instance.well_name_id)
+    permission_classes = [IsAuthenticated]
+
+    def get_user(self, instance):
+        user = self.context['request'].user
+
+        # Получаем сет объектов QuerySet
+        response = instance.objects.filter(owner=user).all()
+        # Сериализуем объкты QuerySet в формат Json
+        serialized_data = serialize(
+            "json", response, use_natural_foreign_keys=True)
+        serialized_data = json.loads(serialized_data)
+        return serialized_data
+        # return User.objects.get(pk=self.request.user.pk)
 
 
 class UserDestroyAPIView(generics.DestroyAPIView):
@@ -129,7 +136,11 @@ class HabitUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+
+
+
 #
+
 #
 #     def perform_update(self, serializer):
 #         instance = serializer.save()

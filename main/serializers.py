@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'telegram_id', 'password', 'token']
+        fields = ['pk', 'email', 'telegram_id', 'password', 'token']
         permission_classes = [AllowAny]
 
     def create(self, validated_data):
@@ -50,7 +50,7 @@ class HabitUserSerializer(serializers.ModelSerializer):
         role = self.context['request'].user.role
         if role == UserRoles.MODERATOR:
             # Получаем сет объектов QuerySet
-            response = instance.lesson_set.all()
+            response = instance.objects.all()
             # Сериализуем объкты QuerySet в формат Json
             serialized_data = serialize(
                 "json", response, use_natural_foreign_keys=True)
@@ -58,7 +58,7 @@ class HabitUserSerializer(serializers.ModelSerializer):
             return serialized_data
         else:
             # Получаем сет объектов QuerySet
-            response = instance.lesson_set.filter(owner=user).all()
+            response = instance.objects.filter(owner=user).all()
             # Сериализуем объкты QuerySet в формат Json
             serialized_data = serialize(
                 "json", response, use_natural_foreign_keys=True)

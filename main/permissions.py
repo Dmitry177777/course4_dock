@@ -22,7 +22,7 @@ class IsHabitUserOwner(BasePermission):
 
 
 class IsUserOwner(BasePermission):
-    message = "Вы не являетесь владельцем!"
+    message = "Вы не являетесь владельцем аккаунта!"
 
     def has_object_permission(self, request, view, obj):
         if request.user == obj.owner:
