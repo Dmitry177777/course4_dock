@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
-from main.permissions import IsModerator, IsHabitUserOwner
+from main.permissions import IsModerator, IsHabitUserOwner, IsUserOwner
 
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer, UserSerializer
 from main.tasks_celery import send_telegram_confirmation
@@ -41,6 +41,24 @@ class UserCreateAPIView(generics.CreateAPIView):
     #     serializer.save()
     #
     #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserUpdateAPIView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    queryset = Habit_user.objects.all()
+    permission_classes = [IsAuthenticated, IsModerator | IsUserOwner]
+#
+#
+#     def perform_update(self, serializer):
+#         instance = serializer.save()
+#         send_email_confirmation(
+#         lesson=instance.lesson_name, well_id=instance.well_name_id)
+
+
+class UserDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated, IsUserOwner]
 
 
 class UserListAPIView(generics.ListAPIView):
