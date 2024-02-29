@@ -14,13 +14,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'telegram_id', 'password']
+        fields = '__all__'
+        # fields = ['email', 'telegram_id', 'password']
 
 
-    def create(self, validated_data):
-        # Использовать метод create_user, который мы
-        # написали ранее, для создания нового пользователя.
-        return User.objects.create_user(**validated_data)
+    # def create(self, validated_data):
+    #     # Использовать метод create_user, который мы
+    #     # написали ранее, для создания нового пользователя.
+    #     return User.objects.create_user(**validated_data)
 
 
 class HabitGuideVSerializer(serializers.ModelSerializer):

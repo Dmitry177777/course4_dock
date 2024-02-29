@@ -30,6 +30,11 @@ class UserUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
 
+    # отфильтровать набор запросов, чтобы гарантировать, что возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
+    # def get_user(self):
+    #     return User.objects.get(pk=self.request.user.pk)
+
+
     # def get_user(self, instance):
     #     user = self.context['request'].user
     #
