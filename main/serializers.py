@@ -12,15 +12,10 @@ from users.models import User, UserRoles
 class UserSerializer(serializers.ModelSerializer):
     """ Сериализация регистрации пользователя и создания нового. """
 
-
-    # Клиентская сторона не должна иметь возможность отправлять токен вместе с
-    # запросом на регистрацию. Сделаем его доступным только на чтение.
-    token = serializers.CharField(max_length=255, read_only=True)
-
     class Meta:
         model = User
-        fields = ['pk', 'email', 'telegram_id', 'password', 'token']
-        permission_classes = [AllowAny]
+        fields = ['email', 'telegram_id', 'password']
+
 
     def create(self, validated_data):
         # Использовать метод create_user, который мы

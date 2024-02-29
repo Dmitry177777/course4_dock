@@ -1,5 +1,6 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
+import users
 from users.models import UserRoles
 
 
@@ -16,15 +17,9 @@ class IsHabitUserOwner(BasePermission):
     message = "Вы не являетесь владельцем!"
 
     def has_object_permission(self, request, view, obj):
-        if request.user == obj.owner:
+        if request.user == obj.user:
             return True
         return False
 
 
-class IsUserOwner(BasePermission):
-    message = "Вы не являетесь владельцем аккаунта!"
 
-    def has_object_permission(self, request, view, obj):
-        if request.user == obj.owner:
-            return True
-        return False

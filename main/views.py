@@ -7,7 +7,7 @@ from rest_framework.utils import json
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
-from main.permissions import IsModerator, IsHabitUserOwner, IsUserOwner
+from main.permissions import IsModerator, IsHabitUserOwner
 
 from main.serializers import HabitGuideVSerializer, HabitUserSerializer, UserSerializer
 from main.tasks_celery import send_telegram_confirmation
@@ -21,68 +21,42 @@ class UserCreateAPIView(generics.CreateAPIView):
     """
     Разрешить всем пользователям (аутентифицированным и нет) доступ к данному эндпоинту.
     """
-    permission_classes = [AllowAny]
     serializer_class = UserSerializer
-
-    def perform_create(self, serializer):
-        # Get the currently authenticated user
-        user_instance = self.request.user
-
-        # Create a 'User' instance with the
-        # 'email' field associated with the user
-        serializer.save(email=user_instance)
-        send_telegram_confirmation(user_instance)
-
-    # def post(self, request):
-    #     user = request.data.get('user', {})
-    #
-    #     # Паттерн создания сериализатора, валидации и сохранения - довольно
-    #     # стандартный, и его можно часто увидеть в реальных проектах.
-    #     serializer = self.serializer_class(data=user)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+    permission_classes = [AllowAny]
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_user(self, instance):
-        user = self.context['request'].user
 
-        # Получаем сет объектов QuerySet
-        response = instance.objects.filter(owner=user).all()
-        # Сериализуем объкты QuerySet в формат Json
-        serialized_data = serialize(
-            "json", response, use_natural_foreign_keys=True)
-        serialized_data = json.loads(serialized_data)
-        return serialized_data
-        # return User.objects.get(pk=self.request.user.pk)
+    # def get_user(self, instance):
+    #     user = self.context['request'].user
+    #
+    #     # Получаем сет объектов QuerySet
+    #     response = instance.objects.filter(owner=user).all()
+    #     # Сериализуем объкты QuerySet в формат Json
+    #     serialized_data = serialize(
+    #         "json", response, use_natural_foreign_keys=True)
+    #     serialized_data = json.loads(serialized_data)
+    #     return serialized_data
+    #     # return User.objects.get(pk=self.request.user.pk)
 
 
 class UserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = [IsAuthenticated, IsUserOwner]
+    permission_classes = [IsAuthenticated]
 
 
 class UserListAPIView(generics.ListAPIView):
     serializer_class = UserSerializer
-    read_only = True
-    queryset = User.objects.all()
-    permission_classes = [AllowAny]
-    # permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+    permission_classes = [IsAuthenticated]
     pagination_class = MainPaginator
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     role = self.request.user.role
-    #     if role == UserRoles.MODERATOR:
-    #         return User.objects.filter(is_public=True)
-    #     else:
-    #         return User.objects.filter(email=user)
+    # отфильтровать набор запросов, чтобы гарантировать, что возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
+    def get_queryset(self):
+        return User.objects.filter(pk=self.request.user.pk).all()
 
 
 class HabitGuideViewSet(viewsets.ModelViewSet):
