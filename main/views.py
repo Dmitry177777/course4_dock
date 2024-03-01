@@ -26,26 +26,15 @@ class UserCreateAPIView(generics.CreateAPIView):
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        return User.objects.get(pk=self.request.user.pk)
 
-    # отфильтровать набор запросов, чтобы гарантировать, что возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
-    # def get_user(self):
-    #     return User.objects.get(pk=self.request.user.pk)
-
-
-    # def get_user(self, instance):
-    #     user = self.context['request'].user
-    #
-    #     # Получаем сет объектов QuerySet
-    #     response = instance.objects.filter(owner=user).all()
-    #     # Сериализуем объкты QuerySet в формат Json
-    #     serialized_data = serialize(
-    #         "json", response, use_natural_foreign_keys=True)
-    #     serialized_data = json.loads(serialized_data)
-    #     return serialized_data
-    #     # return User.objects.get(pk=self.request.user.pk)
+    def perform_update(self, serializer):
+        serializer.save()
 
 
 class UserDestroyAPIView(generics.DestroyAPIView):
@@ -59,7 +48,7 @@ class UserListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     pagination_class = MainPaginator
 
-    # отфильтровать набор запросов, чтобы гарантировать, что возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
+    # возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
     def get_queryset(self):
         return User.objects.filter(pk=self.request.user.pk).all()
 
@@ -92,7 +81,6 @@ class HabitUserListAPIView(generics.ListAPIView):
     serializer_class = HabitUserSerializer
     read_only = True
     queryset = Habit_user.objects.all()
-    # permission_classes = [AllowAny]
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
     pagination_class = MainPaginator
 
@@ -118,53 +106,9 @@ class HabitUserUpdateAPIView(generics.UpdateAPIView):
 
 
 
-#
-
-#
-#     def perform_update(self, serializer):
-#         instance = serializer.save()
-#         send_email_confirmation(
-#         lesson=instance.lesson_name, well_id=instance.well_name_id)
-
-
 class HabitUserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsHabitUserOwner]
 
-#
-#
-#
-# class SubscriptionCreateAPIView(generics.CreateAPIView):
-#     serializer_class = SubscriptionSerializer
-#     permission_classes = [IsAuthenticated]
-#
-#
-# class SubscriptionListAPIView(generics.ListAPIView):
-#     serializer_class = SubscriptionSerializer
-#     queryset = Subscription.objects.all()
-#     permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
-#
-#     def get_queryset (self):
-#         user=self.request.user
-#         role=self.request.user.role
-#         if role == UserRoles.MODERATOR:
-#             return Subscription.objects.all()
-#         else:
-#             return Subscription.objects.filter(owner=user)
-#
-#
-# class SubscriptionRetrieveAPIView(generics.RetrieveAPIView):
-#     serializer_class = SubscriptionSerializer
-#     queryset = Subscription.objects.all()
-#     permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
-#
-#
-#
-# class SubscriptionUpdateAPIView(generics.UpdateAPIView):
-#     serializer_class = SubscriptionSerializer
-#     queryset = Subscription.objects.all()
-#     permission_classes = [IsAuthenticated, IsModerator | IsLessonOwner]
-# class SubscriptionDestroyAPIView(generics.DestroyAPIView):
-#     queryset = Subscription.objects.all()
-#     permission_classes = [IsAuthenticated, IsLessonOwner]
+
