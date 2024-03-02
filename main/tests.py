@@ -15,7 +15,7 @@ class UserAPITestCase(APITestCase):
             'password': '1234567',
                                 }
 
-        response = self.client.post('/users/create/', data)
+        response = self.client.post('/user/create/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
