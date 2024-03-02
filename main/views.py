@@ -42,16 +42,20 @@ class UserDestroyAPIView(generics.DestroyAPIView):
     queryset = User.objects.all()
     permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        return User.objects.get(pk=self.request.user.pk)
+
 
 class UserListAPIView(generics.ListAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = MainPaginator
+    # permission_classes = [AllowAny]
 
     # возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
     def get_queryset(self):
         return User.objects.filter(pk=self.request.user.pk).all()
-
+        # return User.objects.all()
 
 class HabitGuideViewSet(viewsets.ModelViewSet):
     serializer_class = HabitGuideVSerializer
