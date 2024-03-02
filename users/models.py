@@ -41,7 +41,7 @@ class User(AbstractUser):
     telegram_id = models.CharField(
         verbose_name='id телеграмм', max_length=200, **NULLABLE)
     password = models.CharField(verbose_name='пароль', max_length=200, )
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     role = models.CharField(
         max_length=9, choices=UserRoles.choices, default=UserRoles.MEMBER)
 

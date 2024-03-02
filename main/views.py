@@ -85,16 +85,17 @@ class HabitUserListAPIView(generics.ListAPIView):
     serializer_class = HabitUserSerializer
     read_only = True
     queryset = Habit_user.objects.all()
-    permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
+    permission_classes = [IsAuthenticated]
     pagination_class = MainPaginator
+    #IsModerator | IsHabitUserOwner
 
-    def get_queryset(self):
-        user = self.request.user
-        role = self.request.user.role
-        if role == UserRoles.MODERATOR:
-            return Habit_user.objects.filter(is_public=True)
-        else:
-            return Habit_user.objects.filter(email=user)
+    # def get_queryset(self):
+        # user = self.request.user
+        # role = self.request.user.role
+        # if role == UserRoles.MODERATOR:
+        #     return Habit_user.objects.filter(is_public=True)
+        # else:
+        #     return Habit_user.objects.filter(email=user)
 
 
 class HabitUserRetrieveAPIView(generics.RetrieveAPIView):
