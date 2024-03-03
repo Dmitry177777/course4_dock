@@ -51,8 +51,6 @@ class Habit_user(models.Model):
     )
     action = models.ForeignKey(
         Habit_guide,
-        to_field='action',
-        related_name='action_fk',
         on_delete=models.CASCADE,
         verbose_name='действие',
         unique=True
@@ -143,5 +141,9 @@ class Habit_user(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self.is_activ = False
+        self.is_active = False
         self.save()
+
+    def create(self, *args, **kwargs):
+        new_instance = self.__class__(email=User.objects.id, action=Habit_guide.objects.get(action=self.action)) # Создаем новый объект
+        new_instance.save()

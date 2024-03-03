@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, APIClient
 from django.core.exceptions import ObjectDoesNotExist
 
-
+from main.models import Habit_guide, Habit_user
 from main.views import UserListAPIView
 from users.models import User
 
@@ -97,8 +97,6 @@ class UserAPITestCase(APITestCase):
         # Авторизация пользователя и получение токена доступа
         response = self.client.post('/users/token/', data)
         access_token = response.data.get('access')
-
-
 
         # Установка заголовка авторизации с токеном доступа
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
@@ -194,36 +192,134 @@ class UserAPITestCase(APITestCase):
         # Проверка отсутствия данных пользователя в базе данных
         with self.assertRaises(ObjectDoesNotExist):
             User.objects.get(pk=pk)
-#
-# class MainTestCase(APITestCase):
-#
-#     def setUp(self):
-#         pass
-#
-#     def test_create_habit(self):
-#         """Тестирование создание привычки"""
-#
-#         data = {
-#             'action': 'чтение',
-#             'is_useful': True,
-#             'is_nice': True,
-#             'is_activ': True
-#         }
-#
-#         response = self.client.post(
-#             '/habit_user/create/',
-#             data=data
-#         )
-#
-#         # print(response.json())
-#
-#         self.assertEqual(
-#             response.status_code,
-#             status.HTTP_201_CREATED
-#         )
-#
-#         self.assertEqual(
-#             response.json(),
-#             {'id': 1, 'action': 'чтение',
-#              'is_useful': True, 'is_nice': True, 'is_activ': True}
-#                          )
+
+
+
+
+class Hubit_userAPITestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.client = APIClient()
+        records = User.objects.all()
+        records.delete()
+
+
+        # создание суперюзера
+        user = User.objects.create(
+            email='admin@sky.pro',
+            first_name='admin',
+            last_name='SkyPro',
+            is_staff=True,
+            is_superuser=True,
+            is_active=True
+        )
+
+        user.set_password('admin171717')
+        user.save()
+
+        user = User.objects.create(
+            email='k1779@mail.ru',
+            first_name='userMail',
+            last_name='mailRu',
+            is_staff=True,
+            is_superuser=False,
+            is_active=True
+        )
+
+        user.set_password('userMail')
+        user.save()
+
+        user = User.objects.create(
+            email='k17911971@yandex.ru',
+            first_name='userYandex',
+            last_name='YandexRu',
+            is_staff=True,
+            is_superuser=False,
+            is_active=True
+        )
+
+        user.set_password('userYandex')
+        user.save()
+
+        records = Habit_guide.objects.all()
+        records.delete()
+
+        # создание привычек
+        habit_guide = Habit_guide.objects.create(
+            action="кушать мороженку",
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="лизать мороженку",
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="бег",
+            is_useful=True,
+            is_nice=False,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="сидеть",
+            is_useful=False,
+            is_nice=False,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="сон",
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+
+    def test_create_hubit_user(self):
+        # данные для авторизации пользователя
+        data = {
+            "email": "k17911971@yandex.ru",
+            "password": "userYandex"
+        }
+
+        user = User.objects.get(email=data['email'])
+
+
+        # Авторизация пользователя и получение токена доступа
+        response = self.client.post('/users/token/', data)
+        access_token = response.data.get('access')
+
+        # Установка заголовка авторизации с токеном доступа
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        # данные для привычки пользователя
+        data = {
+               "action": "лизать мороженку"
+        }
+        habit_guide = Habit_guide.objects.get(action=data['action'])
+
+        # Тестирование POST-запроса создание нового пользователя // доступ без аутентификации
+        hubit_response = {
+            "email": user.id,
+            "action": habit_guide.id
+        }
+
+        print(hubit_response)
+        response = self.client.post('habit_user/create/', hubit_response)
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Проверка создания нового пользователя в базе данных
+        # self.assertEqual(Habit_user.objects.filter(email=user).exists(), True)
+        print(Habit_user.objects.all())

@@ -59,3 +59,8 @@ class HabitUserSerializer(serializers.ModelSerializer):
             serialized_data = json.loads(serialized_data)
 
             return serialized_data
+
+    def create(self, validated_data):
+        # Использовать метод create_user, который мы
+        # написали ранее, для создания нового пользователя.
+        return Habit_user.objects.create(**validated_data)
