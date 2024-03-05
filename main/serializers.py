@@ -31,6 +31,8 @@ class HabitGuideVSerializer(serializers.ModelSerializer):
 
 
 class HabitUserSerializer(serializers.ModelSerializer):
+    email = serializers.SlugRelatedField(slug_field='email', queryset=User.objects)
+    action = serializers.SlugRelatedField(slug_field='action', queryset=Habit_guide.objects)
 
     class Meta:
         model = Habit_user
@@ -60,7 +62,7 @@ class HabitUserSerializer(serializers.ModelSerializer):
 
             return serialized_data
 
-    def create(self, validated_data):
-        # Использовать метод create_user, который мы
-        # написали ранее, для создания нового пользователя.
-        return Habit_user.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     # Использовать метод create_user, который мы
+    #     # написали ранее, для создания нового пользователя.
+    #     return Habit_user.objects.create(**validated_data)
