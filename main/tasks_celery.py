@@ -21,7 +21,7 @@ def send_telegram_confirmation(user_instance):
     try:
         latest_habit_user =\
             (Habit_user.objects.filter
-             (email=user_instance.email).latest('date_of_habit'))
+             (email=user_instance).latest('date_of_habit'))
         action = latest_habit_user.action
     except ObjectDoesNotExist:
         action = "No action found"

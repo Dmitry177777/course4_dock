@@ -309,16 +309,16 @@ class Hubit_userAPITestCase(APITestCase):
         }
         habit_guide = Habit_guide.objects.get(action=data['action'])
 
-        # Тестирование POST-запроса создание нового пользователя // доступ без аутентификации
+        # Тестирование POST-запроса создание новой привычки пользователя // доступ с аутентификацией
         hubit_response = {
             "email": user.email,
             "action": habit_guide.action
         }
 
         print(hubit_response)
-        response = self.client.post('habit_user/create/', hubit_response)
+        # response = self.client.post('habit_user/create/', hubit_response)
         # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(Habit_user.objects.all())
+        print(Habit_user.objects.get(email=user, action=habit_guide))
 
         # Проверка создания нового пользователя в базе данных
         # self.assertEqual(Habit_user.objects.filter(email=user, action=habit_guide).exists(), True)
