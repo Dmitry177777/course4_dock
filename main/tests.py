@@ -107,7 +107,6 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Проверка соответсвия запрашиваемых данных авторизованному пользователю
-        # print(response.data["count"])
         self.assertIsNotNone(response.data)
         self.assertEqual(response.data['count'], 1) # одно значение в выдаче
         self.assertEqual(response.data['results'][0]['email'], data['email']) # значение совпадает с авторизованным пользователем
@@ -288,6 +287,9 @@ class Hubit_userAPITestCase(APITestCase):
         )
         habit_guide.save()
 
+    # Удаление всех объектов Habit_user
+    records = Habit_user.objects.all()
+    records.delete()
 
     def test_create_hubit_user(self):
         # данные для авторизации пользователя
@@ -323,4 +325,44 @@ class Hubit_userAPITestCase(APITestCase):
         #Проверка успешного создания записи
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_hubit_user_list(self, user=None):
+        # данные для авторизации пользователя
+        data = {
+            "email": "k17911971@yandex.ru",
+            "password": "userYandex"
+        }
 
+        # Авторизация пользователя и получение токена доступа
+        response = self.client.post('/users/token/', data)
+        access_token = response.data.get('access')
+
+        # Установка заголовка авторизации с токеном доступа
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        # Создание новой привычки пользователя // доступ с аутентификацией
+        self.client.post('/habit_user/create/', data)
+
+        habit_user = Habit_user.objects.create(
+            email="k17911971@yandex.ru",
+            action="лизать мороженку"
+        )
+        habit_user.save()
+
+        # Отправка Get-запроса на получение списка привычек пользователя
+        response = self.client.get('/habit_user/')
+        # Проверка ответа сервера на доступ к данным
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        self.assertIsNotNone(response.data)
+        self.assertEqual(response.data['count'], 1)  # одно значение в выдаче
+        self.assertEqual(response.data['results'][0]['email'],
+                         data['email'])  # значение совпадает с авторизованным пользователем
+
+        # Установка заголовка авторизации без данных токена // пользователь не авторизован
+        self.client.credentials(HTTP_AUTHORIZATION=f'')
+
+        # Отправка Get-запроса на получение списка пользователя
+        response = self.client.get('/habit_user/')
+        # Проверка ответа сервера на доступ к данным
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
