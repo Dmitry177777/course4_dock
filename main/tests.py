@@ -200,6 +200,8 @@ class Hubit_userAPITestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
+
+        #Удаление всех объектов User
         records = User.objects.all()
         records.delete()
 
@@ -241,6 +243,7 @@ class Hubit_userAPITestCase(APITestCase):
         user.set_password('userYandex')
         user.save()
 
+        # Удаление всех объектов Habit_guide
         records = Habit_guide.objects.all()
         records.delete()
 
@@ -288,38 +291,36 @@ class Hubit_userAPITestCase(APITestCase):
 
     def test_create_hubit_user(self):
         # данные для авторизации пользователя
-        data = {
+        user_data = {
             "email": "k17911971@yandex.ru",
             "password": "userYandex"
         }
 
-        user = User.objects.get(email=data['email'])
+        user = User.objects.get(email=user_data['email'])
 
 
         # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', data)
+        response = self.client.post('/users/token/', user_data)
         access_token = response.data.get('access')
 
         # Установка заголовка авторизации с токеном доступа
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
 
         # данные для привычки пользователя
-        data = {
+        habit_data = {
                "action": "лизать мороженку"
         }
-        habit_guide = Habit_guide.objects.get(action=data['action'])
+        habit_guide = Habit_guide.objects.get(action=habit_data['action'])
 
         # Тестирование POST-запроса создание новой привычки пользователя // доступ с аутентификацией
-        hubit_response = {
+        data = {
             "email": user.email,
             "action": habit_guide.action
         }
 
-        print(hubit_response)
-        # response = self.client.post('habit_user/create/', hubit_response)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        print(Habit_user.objects.get(email=user, action=habit_guide))
+        response = self.client.post('/habit_user/create/', data)
 
-        # Проверка создания нового пользователя в базе данных
-        # self.assertEqual(Habit_user.objects.filter(email=user, action=habit_guide).exists(), True)
-        # print(Habit_user.objects.all())
+        #Проверка успешного создания записи
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
