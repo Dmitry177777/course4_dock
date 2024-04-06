@@ -17,6 +17,10 @@ action_test = {
     "action": "лизать мороженку"
 }
 
+action_test_up = {
+    "action": "бег"
+}
+
 user_unauthorized = {
     "email": "k971@yan.ru",
     "password": "urYanx"
@@ -131,10 +135,10 @@ class UserAPITestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
 
         user = User.objects.get(email=user_test['email'])
-        pk=user.pk
+        pk = user.pk
 
         # Обновляемые данные
-        updata = {
+        up_data = {
            "email": "k17911971@yandex.ru",
            "password": "userYandex",
            "phone": "170479",
@@ -142,7 +146,7 @@ class UserAPITestCase(APITestCase):
         }
 
         # Отправка Put-запроса на обновление данных пользователя
-        response = self.client.put(f'/user/update/{pk}/', updata)
+        response = self.client.put(f'/user/update/{pk}/', up_data)
         # Проверка ответа сервера на доступ к данным
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -150,8 +154,8 @@ class UserAPITestCase(APITestCase):
         user = User.objects.get(email=user_test['email'])
 
         # Проверка на проведенное обновление
-        self.assertEqual(user.phone, updata["phone"])
-        self.assertEqual(user.telegram_id, updata["telegram_id"])
+        self.assertEqual(user.phone, up_data["phone"])
+        self.assertEqual(user.telegram_id, up_data["telegram_id"])
 
         # Проверка соответсвия запрашиваемых данных авторизованному пользователю
         self.assertIsNotNone(response.data)
@@ -182,7 +186,7 @@ class UserAPITestCase(APITestCase):
 
 
 
-class Hubit_userAPITestCase(APITestCase):
+class Habit_userAPITestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
@@ -190,7 +194,6 @@ class Hubit_userAPITestCase(APITestCase):
         #Удаление всех объектов User
         records = User.objects.all()
         records.delete()
-
 
         # создание суперюзера
         user = User.objects.create(
@@ -235,25 +238,25 @@ class Hubit_userAPITestCase(APITestCase):
 
         # создание привычек
         habit_guide = Habit_guide.objects.create(
+            action=action_test['action'],
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action=action_test_up['action'],
+            is_useful=True,
+            is_nice=False,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
             action="кушать мороженку",
             is_useful=False,
             is_nice=True,
-            is_activ=True
-        )
-        habit_guide.save()
-
-        habit_guide = Habit_guide.objects.create(
-            action="лизать мороженку",
-            is_useful=False,
-            is_nice=True,
-            is_activ=True
-        )
-        habit_guide.save()
-
-        habit_guide = Habit_guide.objects.create(
-            action="бег",
-            is_useful=True,
-            is_nice=False,
             is_activ=True
         )
         habit_guide.save()
@@ -278,10 +281,8 @@ class Hubit_userAPITestCase(APITestCase):
     records = Habit_user.objects.all()
     records.delete()
 
-    def test_create_hubit_user(self):
+    def test_create_habit_user(self):
         # данные для авторизации пользователя
-
-
 
         # Авторизация пользователя и получение токена доступа
         response = self.client.post('/users/token/', user_test)
@@ -290,11 +291,8 @@ class Hubit_userAPITestCase(APITestCase):
         # Установка заголовка авторизации с токеном доступа
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
 
-
-
         user = User.objects.get(email=user_test['email'])
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
-
 
         # Тестирование POST-запроса создание новой привычки пользователя // доступ с аутентификацией
         data = {
@@ -307,7 +305,7 @@ class Hubit_userAPITestCase(APITestCase):
         #Проверка успешного создания записи
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_hubit_user_list(self, user=None):
+    def test_habit_user_list(self, user=None):
 
         # Авторизация пользователя и получение токена доступа
         response = self.client.post('/users/token/', user_test)
@@ -344,3 +342,42 @@ class Hubit_userAPITestCase(APITestCase):
         response = self.client.get('/habit_user/')
         # Проверка ответа сервера на доступ к данным
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_habit_user_update(self, user=None):
+        # Авторизация пользователя и получение токена доступа
+        response = self.client.post('/users/token/', user_test)
+        access_token = response.data.get('access')
+
+        # Установка заголовка авторизации с токеном доступа
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # Установка тестовой привычки
+        user = User.objects.get(email=user_test['email'])
+        habit_guide = Habit_guide.objects.get(action=action_test['action'])
+
+        user_action = Habit_user.objects.create(email=user, action=habit_guide)
+        user_action.save()
+        pk = user_action.pk
+
+        # Обновляемые данные
+        up_data = {
+            "email": user_test['email'],
+            "action": action_test_up['action']
+                  }
+
+        # Отправка Put-запроса на обновление данных пользователя
+        response = self.client.put(f'/habit_user/update/{pk}/', up_data)
+
+        # Проверка ответа сервера
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # обновленный объект hubit_user
+        user_up = Habit_user.objects.get(id=pk)
+
+        # Проверка на проведенное обновление
+        self.assertEqual(user_up.email.email, up_data["email"])
+        self.assertEqual(user_up.action.action, up_data["action"])
+
+        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        self.assertIsNotNone(response.data)
+        self.assertEqual(response.data['email'],
+                         user.email)  # значение id  в выдаче совпадает с авторизованным пользователем pk

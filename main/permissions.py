@@ -17,7 +17,7 @@ class IsHabitUserOwner(BasePermission):
     message = "Вы не являетесь владельцем!"
 
     def has_object_permission(self, request, view, obj):
-        if request.user == obj.user:
+        if request.user == obj.email:
             return True
         return False
 
