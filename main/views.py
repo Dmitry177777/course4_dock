@@ -63,7 +63,7 @@ class HabitGuideViewSet(viewsets.ModelViewSet):
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['is_useful', 'is_nice']
     ordering_fields = ['action']
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsModerator]
 
 
 class HabitUserCreateAPIView(generics.CreateAPIView):
