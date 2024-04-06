@@ -90,9 +90,6 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Тестирование POST-запроса на авторизацию // создание токена пользователя которого нет в базе
-
-
-
         response = self.client.post('/users/token/', user_unauthorized)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -172,7 +169,6 @@ class UserAPITestCase(APITestCase):
 
         user = User.objects.get(email=user_test['email'])
         pk = user.pk
-        print(pk)
 
         # Отправка Del-запроса на удаление данных пользователя
         response = self.client.delete(f'/user/delete/{pk}/', user_test)
@@ -381,3 +377,36 @@ class Habit_userAPITestCase(APITestCase):
         self.assertIsNotNone(response.data)
         self.assertEqual(response.data['email'],
                          user.email)  # значение id  в выдаче совпадает с авторизованным пользователем pk
+
+
+    def test_habit_user_delete(self, user=None):
+
+        # Авторизация пользователя и получение токена доступа
+        response = self.client.post('/users/token/', user_test)
+        access_token = response.data.get('access')
+
+        # Установка заголовка авторизации с токеном доступа
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        # Установка тестовой привычки
+        user = User.objects.get(email=user_test['email'])
+        habit_guide = Habit_guide.objects.get(action=action_test['action'])
+
+        user_action = Habit_user.objects.create(email=user, action=habit_guide)
+        user_action.save()
+        pk = user_action.pk
+
+        # удаляемые данные
+        del_data = {
+            "email": user_test['email'],
+            "action": action_test['action']
+        }
+
+        # Отправка Del-запроса на удаление данных пользователя
+        response = self.client.delete(f'/habit_user/delete/{pk}/', del_data)
+        # Проверка ответа сервера на доступ к данным
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Проверка отсутствия данных пользователя в базе данных (запись не активна)
+        data = Habit_user.objects.get(pk=pk)
+        self.assertEqual(data.is_activ, False)
