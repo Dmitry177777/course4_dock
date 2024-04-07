@@ -23,7 +23,7 @@ def send_telegram_confirmation(user_instance):
         latest_habit_user =\
             (Habit_user.objects.filter
              (email=user_instance).latest('date_of_habit'))
-        action = latest_habit_user.action
+        action = latest_habit_user.action.action
     except ObjectDoesNotExist:
         action = "No action found"
 
@@ -32,7 +32,7 @@ def send_telegram_confirmation(user_instance):
 
     message_text = (f"Hello {serialized_user['email']},"
                     f" you have a new habit: {action}.")
-    send_telegram_message.delay(serialized_user['telegram_id'], message_text)
+    send_telegram_message.delay(serialized_user, message_text)
 
 
 @shared_task
