@@ -27,6 +27,16 @@ user_unauthorized = {
 }
 
 
+# Авторизация пользователя и получение токена доступа
+def autorization(self, user):
+    self.client = APIClient()
+    response = self.client.post('/users/token/', user)
+    access_token = response.data.get('access')
+
+    # Установка заголовка авторизации с токеном доступа
+    self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+
 class UserAPITestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -95,13 +105,8 @@ class UserAPITestCase(APITestCase):
 
 
     def test_user_list(self, user=None):
-
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         # Отправка Get-запроса на получение списка пользователей
         response = self.client.get('/user/list/')
@@ -123,13 +128,8 @@ class UserAPITestCase(APITestCase):
 
 
     def test_user_update(self, user=None):
-
-           # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         user = User.objects.get(email=user_test['email'])
         pk = user.pk
@@ -159,13 +159,8 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(response.data['id'], pk)  # значение id  в выдаче совпадает с авторизованным пользователем pk
 
     def test_user_delete(self, user=None):
-
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         user = User.objects.get(email=user_test['email'])
         pk = user.pk
@@ -278,14 +273,8 @@ class Habit_userAPITestCase(APITestCase):
     records.delete()
 
     def test_create_habit_user(self):
-        # данные для авторизации пользователя
-
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         user = User.objects.get(email=user_test['email'])
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
@@ -302,16 +291,10 @@ class Habit_userAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_habit_user_list(self, user=None):
-
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         # Создание новой привычки пользователя // доступ с аутентификацией
-
         user = User.objects.get(email=user_test['email'])
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
 
@@ -340,12 +323,9 @@ class Habit_userAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_habit_user_update(self, user=None):
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
+        # авторизация
+        autorization(self, user_test)
 
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
         # Установка тестовой привычки
         user = User.objects.get(email=user_test['email'])
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
@@ -381,12 +361,8 @@ class Habit_userAPITestCase(APITestCase):
 
     def test_habit_user_delete(self, user=None):
 
-        # Авторизация пользователя и получение токена доступа
-        response = self.client.post('/users/token/', user_test)
-        access_token = response.data.get('access')
-
-        # Установка заголовка авторизации с токеном доступа
-        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        # авторизация
+        autorization(self, user_test)
 
         # Установка тестовой привычки
         user = User.objects.get(email=user_test['email'])
@@ -402,11 +378,11 @@ class Habit_userAPITestCase(APITestCase):
             "action": action_test['action']
         }
 
-        # Отправка Del-запроса на удаление данных пользователя
+        # Отправка Del-запроса на удаление данных привычки пользователя
         response = self.client.delete(f'/habit_user/delete/{pk}/', del_data)
-        # Проверка ответа сервера на доступ к данным
+        # Проверка ответа сервера
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # Проверка отсутствия данных пользователя в базе данных (запись не активна)
+        # Проверка отсутствия данных привычки пользователя в базе данных (запись не активна)
         data = Habit_user.objects.get(pk=pk)
         self.assertEqual(data.is_activ, False)
