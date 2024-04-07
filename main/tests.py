@@ -13,6 +13,11 @@ user_test = {
     "password": "userYandex"
 }
 
+user_test_moderator = {
+    "email": "admin@sky.pro",
+    "password": "admin171717"
+}
+
 action_test = {
     "action": "лизать мороженку"
 }
@@ -386,3 +391,91 @@ class Habit_userAPITestCase(APITestCase):
         # Проверка отсутствия данных привычки пользователя в базе данных (запись не активна)
         data = Habit_user.objects.get(pk=pk)
         self.assertEqual(data.is_activ, False)
+
+
+class Habit_guideAPITestCase(APITestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.client = APIClient()
+
+        #Удаление всех объектов User
+        records = User.objects.all()
+        records.delete()
+
+        # создание суперюзера / модератора
+        user = User.objects.create(
+            email=user_test_moderator['email'],
+            first_name='admin',
+            last_name='SkyPro',
+            is_staff=True,
+            is_superuser=True,
+            is_active=True,
+            role='MODERATOR'
+        )
+
+        user.set_password(user_test_moderator['password'])
+        user.save()
+
+        # создание обычного пользователя / не обладающего правами модератора
+        user = User.objects.create(
+            email=user_test['email'],
+            first_name='userYandex',
+            last_name='YandexRu',
+            is_staff=True,
+            is_superuser=False,
+            is_active=True,
+            role = 'MEMBER'
+        )
+
+        user.set_password(user_test['password'])
+        user.save()
+
+        # Удаление всех объектов Habit_guide
+        records = Habit_guide.objects.all()
+        records.delete()
+
+        # создание привычек
+        habit_guide = Habit_guide.objects.create(
+            action=action_test['action'],
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action=action_test_up['action'],
+            is_useful=True,
+            is_nice=False,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="кушать мороженку",
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="сидеть",
+            is_useful=False,
+            is_nice=False,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        habit_guide = Habit_guide.objects.create(
+            action="сон",
+            is_useful=False,
+            is_nice=True,
+            is_activ=True
+        )
+        habit_guide.save()
+
+        # Удаление всех объектов Habit_user
+        records = Habit_user.objects.all()
+        records.delete()
+
