@@ -520,10 +520,6 @@ class Habit_guideAPITestCase(APITestCase):
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
         pk = habit_guide.pk
 
-        print(pk)
-        print(Habit_guide.objects.get(id=pk))
-
-
         # Тестирование PUT-запроса без авторизации
         autorization(self, user_unauthorized)
         response = self.client.put(f'/habit/{pk}/', action_test_up)
@@ -544,3 +540,27 @@ class Habit_guideAPITestCase(APITestCase):
         user_up = Habit_guide.objects.get(id=pk)
         self.assertEqual(user_up.action, action_test_up["action"])
 
+    def test_habit_delete(self, user=None):
+
+        # Выбор тестовой привычки
+        habit_guide = Habit_guide.objects.get(action=action_test['action'])
+        pk = habit_guide.pk
+
+        # Тестирование PUT-запроса без авторизации
+        autorization(self, user_unauthorized)
+        response = self.client.delete(f'/habit/{pk}/', action_test)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Тестирование PUT-запроса с авторизацией без права доступа (не модератора)
+        autorization(self, user_test)
+        response = self.client.delete(f'/habit/{pk}/', action_test)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+
+        # Тестирование PUT-запроса с авторизацией модератора
+        autorization(self, user_test_moderator)
+        response = self.client.delete(f'/habit/{pk}/', action_test)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        # Проверка отсутствия данных привычки пользователя в базе данных (запись не активна)
+        data = Habit_guide.objects.get(pk=pk)
+        self.assertEqual(data.is_activ, False)
