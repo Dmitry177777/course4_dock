@@ -32,7 +32,7 @@ def send_telegram_confirmation(user_instance):
 
     message_text = (f"Hello {serialized_user['email']},"
                     f" you have a new habit: {action}.")
-    send_telegram_message.delay(serialized_user, message_text)
+    send_telegram_message.delay(serialized_user['telegram_id'], message_text)
 
 
 @shared_task
