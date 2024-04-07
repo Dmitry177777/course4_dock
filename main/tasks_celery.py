@@ -45,7 +45,6 @@ def check_periodicity():
     # конвертируем текущую дату в объект datetime с учетом часового пояса
     now_date = pytz.utc.localize(datetime.combine(current_datetime, datetime.min.time()))
 
-
     # Получаем объект Habit_user только активные позиции
     instance = Habit_user.objects.filter(is_activ=True)
 
