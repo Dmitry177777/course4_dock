@@ -1,11 +1,9 @@
 from django.core.serializers import serialize
 from rest_framework import serializers
 import json
-
-from rest_framework.permissions import AllowAny
+# from rest_framework.permissions import AllowAny
 
 from main.models import Habit_guide, Habit_user
-
 from users.models import User, UserRoles
 
 
@@ -14,7 +12,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "first_name", "last_name", "email", "telegram_id", "password", "avatar", "phone", "country"]
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "telegram_id",
+            "password",
+            "avatar",
+            "phone",
+            "country"
+        ]
 
     def create(self, validated_data):
         # Использовать метод create_user, который мы
@@ -29,10 +37,15 @@ class HabitGuideVSerializer(serializers.ModelSerializer):
         fields = ["id", "action", "is_useful", "is_nice", "is_activ"]
 
 
-
 class HabitUserSerializer(serializers.ModelSerializer):
-    email = serializers.SlugRelatedField(slug_field='email', queryset=User.objects)
-    action = serializers.SlugRelatedField(slug_field='action', queryset=Habit_guide.objects)
+    email = serializers.SlugRelatedField(
+        slug_field='email',
+        queryset=User.objects
+    )
+    action = serializers.SlugRelatedField(
+        slug_field='action',
+        queryset=Habit_guide.objects
+    )
 
     class Meta:
         model = Habit_user
