@@ -1,25 +1,24 @@
-from django.core.serializers import serialize
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.utils import json
-
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
 from main.permissions import IsModerator, IsHabitUserOwner
 
-from main.serializers import HabitGuideVSerializer, HabitUserSerializer, UserSerializer
+from main.serializers import (HabitGuideVSerializer,
+                              HabitUserSerializer,
+                              UserSerializer)
 from main.tasks_celery import send_telegram_confirmation
 
 from users.models import UserRoles
-from rest_framework.response import Response
-from rest_framework import status
 
 
 class UserCreateAPIView(generics.CreateAPIView):
     """
-    Разрешить всем пользователям (аутентифицированным и нет) доступ к данному эндпоинту.
+    Разрешить всем пользователям
+    (аутентифицированным и нет)
+     доступ к данному эндпоинту.
     """
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
@@ -52,7 +51,9 @@ class UserListAPIView(generics.ListAPIView):
     pagination_class = MainPaginator
     # permission_classes = [AllowAny]
 
-    # возвращаются только результаты, относящиеся к текущему аутентифицированному пользователю, делающему запрос.
+    # возвращаются только результаты,
+    # относящиеся к текущему
+    # аутентифицированному пользователю, делающему запрос.
     def get_queryset(self):
         return User.objects.filter(pk=self.request.user.pk).all()
         # return User.objects.all()
@@ -114,5 +115,3 @@ class HabitUserDestroyAPIView(generics.DestroyAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsHabitUserOwner]
-
-

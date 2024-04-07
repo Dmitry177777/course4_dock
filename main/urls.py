@@ -10,7 +10,10 @@ from main.views import (
     HabitUserListAPIView,
     HabitUserRetrieveAPIView,
     HabitUserUpdateAPIView,
-    HabitUserDestroyAPIView, UserListAPIView, UserUpdateAPIView, UserDestroyAPIView
+    HabitUserDestroyAPIView,
+    UserListAPIView,
+    UserUpdateAPIView,
+    UserDestroyAPIView
 )
 
 app_name = MainConfig.name

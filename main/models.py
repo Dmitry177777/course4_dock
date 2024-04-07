@@ -145,5 +145,8 @@ class Habit_user(models.Model):
         self.save()
 
     def create(self, *args, **kwargs):
-        new_instance = self.__class__(email=User.objects.id, action=Habit_guide.objects.get(action=self.action)) # Создаем новый объект
+        new_instance = self.__class__(
+            email=User.objects.id,
+            action=Habit_guide.objects.get(action=self.action)
+        )  # Создаем новый объект
         new_instance.save()
