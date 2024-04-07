@@ -141,7 +141,7 @@ class Habit_user(models.Model):
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self.is_active = False
+        self.is_activ = False
         self.save()
 
     def create(self, *args, **kwargs):

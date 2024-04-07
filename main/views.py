@@ -57,6 +57,7 @@ class UserListAPIView(generics.ListAPIView):
         return User.objects.filter(pk=self.request.user.pk).all()
         # return User.objects.all()
 
+
 class HabitGuideViewSet(viewsets.ModelViewSet):
     serializer_class = HabitGuideVSerializer
     queryset = Habit_guide.objects.all()
@@ -87,7 +88,6 @@ class HabitUserListAPIView(generics.ListAPIView):
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
     pagination_class = MainPaginator
-    
 
     def get_queryset(self):
         user = self.request.user
@@ -108,7 +108,6 @@ class HabitUserUpdateAPIView(generics.UpdateAPIView):
     serializer_class = HabitUserSerializer
     queryset = Habit_user.objects.all()
     permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
-
 
 
 class HabitUserDestroyAPIView(generics.DestroyAPIView):
