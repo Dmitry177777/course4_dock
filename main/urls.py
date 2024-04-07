@@ -16,7 +16,7 @@ from main.views import (
 app_name = MainConfig.name
 
 router = DefaultRouter()
-router.register(r'Habit', HabitGuideViewSet, basename='habit')
+router.register(r'habit', HabitGuideViewSet, basename='habit')
 
 urlpatterns = [
     path('user/create/',

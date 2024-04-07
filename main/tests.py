@@ -87,7 +87,7 @@ class UserAPITestCase(APITestCase):
         user.save()
 
 
-    def test_create_user(self):
+    def test_user_create(self):
         # Тестирование POST-запроса создание нового пользователя // доступ без аутентификации
         data = {
             "email": "xxxx@mail.ru",
@@ -277,7 +277,7 @@ class Habit_userAPITestCase(APITestCase):
     records = Habit_user.objects.all()
     records.delete()
 
-    def test_create_habit_user(self):
+    def test_habit_user_create(self):
         # авторизация
         autorization(self, user_test)
 
@@ -460,14 +460,6 @@ class Habit_guideAPITestCase(APITestCase):
         habit_guide.save()
 
         habit_guide = Habit_guide.objects.create(
-            action="сидеть",
-            is_useful=False,
-            is_nice=False,
-            is_activ=True
-        )
-        habit_guide.save()
-
-        habit_guide = Habit_guide.objects.create(
             action="сон",
             is_useful=False,
             is_nice=True,
@@ -478,4 +470,48 @@ class Habit_guideAPITestCase(APITestCase):
         # Удаление всех объектов Habit_user
         records = Habit_user.objects.all()
         records.delete()
+
+    def test_habit_guide_create(self):
+
+        # данные создаваемой в справочнике привычки
+        data = {"action": "сидеть",
+                "is_useful": False,
+                "is_nice": False,
+                "is_activ": True}
+
+        # Тестирование POST-запроса без авторизации
+        response = self.client.post('/habit/', data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Тестирование POST-запроса с авторизацией без права доступа (не модератора)
+        autorization(self, user_test)
+        response = self.client.post('/habit/', data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+
+        # Тестирование POST-запроса с авторизацией модератора
+        autorization(self, user_test_moderator)
+        response = self.client.post('/habit/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_habit_guide_list(self, user=None):
+
+        # Тестирование GET-запроса без авторизации
+        autorization(self, user_unauthorized)
+        response = self.client.get('/habit/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Тестирование GET-запроса с авторизацией без права доступа (не модератора)
+        autorization(self, user_test)
+        response = self.client.get('/habit/')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+
+        # Тестирование GET-запроса с авторизацией модератора
+        autorization(self, user_test_moderator)
+        response = self.client.get('/habit/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.data)
+        self.assertTrue(len(response.data) > 0)  # проверяет наличие в списке 1 и более значений
+
 

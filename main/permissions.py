@@ -8,7 +8,7 @@ class IsModerator(BasePermission):
     message = "Вы не являетесь модератором!"
 
     def has_permission(self, request, view):
-        if request.user.role == UserRoles.MODERATOR:
+        if request.user.role == "MODERATOR":
             return True
         return False
 
