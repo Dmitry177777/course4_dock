@@ -515,3 +515,34 @@ class Habit_guideAPITestCase(APITestCase):
         self.assertTrue(len(response.data) > 0)  # проверяет наличие в списке 1 и более значений
 
 
+    def test_habit_guide_update(self, user=None):
+        # Выбор тестовой привычки
+        habit_guide = Habit_guide.objects.get(action=action_test['action'])
+        pk = habit_guide.pk
+
+        print(pk)
+        print(Habit_guide.objects.get(id=pk))
+
+
+        # Тестирование PUT-запроса без авторизации
+        autorization(self, user_unauthorized)
+        response = self.client.put(f'/habit/{pk}/', action_test_up)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Тестирование PUT-запроса с авторизацией без права доступа (не модератора)
+        autorization(self, user_test)
+        response = self.client.put(f'/habit/{pk}/', action_test_up)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+
+        # Тестирование PUT-запроса с авторизацией модератора
+        autorization(self, user_test_moderator)
+        response = self.client.put(f'/habit/{pk}/', action_test_up)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.data)
+
+        # обновленный объект habit
+        print(Habit_guide.objects.get(id=pk))
+        user_up = Habit_guide.objects.get(id=pk)
+        self.assertEqual(user_up.action, action_test_up["action"])
+
