@@ -4,7 +4,6 @@ from rest_framework.test import APITestCase, APIRequestFactory, APIClient
 from django.core.exceptions import ObjectDoesNotExist
 
 from main.models import Habit_guide, Habit_user
-from main.views import UserListAPIView
 from users.models import User
 
 # постоянные значения для всех тестов
@@ -86,9 +85,9 @@ class UserAPITestCase(APITestCase):
         user.set_password('userYandex')
         user.save()
 
-
     def test_user_create(self):
-        # Тестирование POST-запроса создание нового пользователя // доступ без аутентификации
+        # Тестирование POST-запроса создание нового пользователя
+        # доступ без аутентификации
         data = {
             "email": "xxxx@mail.ru",
             "telegram_id": "11122233",
@@ -99,15 +98,16 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_user_token(self):
-        # Тестирование POST-запроса на авторизацию // создание токена пользователя из базы
+        # Тестирование POST-запроса на авторизацию
+        # создание токена пользователя из базы
 
         response = self.client.post('/users/token/', user_test)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Тестирование POST-запроса на авторизацию // создание токена пользователя которого нет в базе
+        # Тестирование POST-запроса на авторизацию
+        # создание токена пользователя которого нет в базе
         response = self.client.post('/users/token/', user_unauthorized)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
     def test_user_list(self, user=None):
         # авторизация
@@ -118,19 +118,23 @@ class UserAPITestCase(APITestCase):
         # Проверка ответа сервера на доступ к данным
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        # Проверка соответсвия запрашиваемых
+        # данных авторизованному пользователю
         self.assertIsNotNone(response.data)
-        self.assertEqual(response.data['count'], 1) # одно значение в выдаче
-        self.assertEqual(response.data['results'][0]['email'], user_test['email']) # значение совпадает с авторизованным пользователем
+        self.assertEqual(response.data['count'], 1)  # одно значение в выдаче
+        self.assertEqual(
+            response.data['results'][0]['email'],
+            user_test['email']
+        )  # значение совпадает с авторизованным пользователем
 
-        # Установка заголовка авторизации без данных токена // пользователь не авторизован
-        self.client.credentials(HTTP_AUTHORIZATION=f'')
+        # Установка заголовка авторизации без данных токена
+        # пользователь не авторизован
+        self.client.credentials(HTTP_AUTHORIZATION='')
 
         # Отправка Get-запроса на получение списка пользователей
         response = self.client.get('/user/list/')
         # Проверка ответа сервера на доступ к данным
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
     def test_user_update(self, user=None):
         # авторизация
@@ -159,9 +163,13 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(user.phone, up_data["phone"])
         self.assertEqual(user.telegram_id, up_data["telegram_id"])
 
-        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        # Проверка соответсвия запрашиваемых
+        # данных авторизованному пользователю
         self.assertIsNotNone(response.data)
-        self.assertEqual(response.data['id'], pk)  # значение id  в выдаче совпадает с авторизованным пользователем pk
+        self.assertEqual(
+            response.data['id'],
+            pk
+        )  # значение id  в выдаче совпадает с авторизованным пользователем pk
 
     def test_user_delete(self, user=None):
         # авторизация
@@ -180,14 +188,12 @@ class UserAPITestCase(APITestCase):
             User.objects.get(pk=pk)
 
 
-
-
 class Habit_userAPITestCase(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.client = APIClient()
 
-        #Удаление всех объектов User
+        # Удаление всех объектов User
         records = User.objects.all()
         records.delete()
 
@@ -284,7 +290,8 @@ class Habit_userAPITestCase(APITestCase):
         user = User.objects.get(email=user_test['email'])
         habit_guide = Habit_guide.objects.get(action=action_test['action'])
 
-        # Тестирование POST-запроса создание новой привычки пользователя // доступ с аутентификацией
+        # Тестирование POST-запроса создание новой привычки пользователя
+        # доступ с аутентификацией
         data = {
             "email": user.email,
             "action": habit_guide.action
@@ -292,7 +299,7 @@ class Habit_userAPITestCase(APITestCase):
 
         response = self.client.post('/habit_user/create/', data)
 
-        #Проверка успешного создания записи
+        # Проверка успешного создания записи
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_habit_user_list(self, user=None):
@@ -311,16 +318,25 @@ class Habit_userAPITestCase(APITestCase):
         # Проверка ответа сервера на доступ к данным
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        # Проверка соответсвия запрашиваемых
+        # данных авторизованному пользователю
         self.assertIsNotNone(response.data)
-        self.assertEqual(response.data['count'], 1)  # одно значение в выдаче
-        self.assertEqual(response.data['results'][0]['email'],
-                         user_test['email'])  # значение совпадает с авторизованным пользователем
-        self.assertEqual(response.data['results'][0]['action'],
-                         action_test['action'])  # значение совпадает с записываемой привычкой
+        self.assertEqual(
+            response.data['count'],
+            1
+        )  # одно значение в выдаче
+        self.assertEqual(
+            response.data['results'][0]['email'],
+            user_test['email']
+        )  # значение совпадает с авторизованным пользователем
+        self.assertEqual(
+            response.data['results'][0]['action'],
+            action_test['action']
+        )  # значение совпадает с записываемой привычкой
 
-        # Установка заголовка авторизации без данных токена // пользователь не авторизован
-        self.client.credentials(HTTP_AUTHORIZATION=f'')
+        # Установка заголовка авторизации без данных токена
+        # пользователь не авторизован
+        self.client.credentials(HTTP_AUTHORIZATION='')
 
         # Отправка Get-запроса на получение списка пользователя
         response = self.client.get('/habit_user/')
@@ -358,11 +374,13 @@ class Habit_userAPITestCase(APITestCase):
         self.assertEqual(user_up.email.email, up_data["email"])
         self.assertEqual(user_up.action.action, up_data["action"])
 
-        # Проверка соответсвия запрашиваемых данных авторизованному пользователю
+        # Проверка соответсвия запрашиваемых
+        # данных авторизованному пользователю
         self.assertIsNotNone(response.data)
-        self.assertEqual(response.data['email'],
-                         user.email)  # значение id  в выдаче совпадает с авторизованным пользователем pk
-
+        self.assertEqual(
+            response.data['email'],
+            user.email
+        )  # значение id  в выдаче совпадает с авторизованным пользователем pk
 
     def test_habit_user_delete(self, user=None):
 
@@ -388,7 +406,8 @@ class Habit_userAPITestCase(APITestCase):
         # Проверка ответа сервера
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        # Проверка отсутствия данных привычки пользователя в базе данных (запись не активна)
+        # Проверка отсутствия данных привычки
+        # пользователя в базе данных (запись не активна)
         data = Habit_user.objects.get(pk=pk)
         self.assertEqual(data.is_activ, False)
 
@@ -398,7 +417,7 @@ class Habit_guideAPITestCase(APITestCase):
         self.factory = APIRequestFactory()
         self.client = APIClient()
 
-        #Удаление всех объектов User
+        # Удаление всех объектов User
         records = User.objects.all()
         records.delete()
 
@@ -424,7 +443,7 @@ class Habit_guideAPITestCase(APITestCase):
             is_staff=True,
             is_superuser=False,
             is_active=True,
-            role = 'MEMBER'
+            role='MEMBER'
         )
 
         user.set_password(user_test['password'])
@@ -483,13 +502,18 @@ class Habit_guideAPITestCase(APITestCase):
         response = self.client.post('/habit/', data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        # Тестирование POST-запроса с авторизацией без права доступа (не модератора)
+        # Тестирование POST-запроса с авторизацией
+        # без права доступа (не модератора)
         autorization(self, user_test)
         response = self.client.post('/habit/', data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+        self.assertEqual(
+            response.data['detail'],
+            "Вы не являетесь модератором!"
+        )
 
-        # Тестирование POST-запроса с авторизацией модератора
+        # Тестирование POST-запроса с авторизацией
+        # модератора
         autorization(self, user_test_moderator)
         response = self.client.post('/habit/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -501,19 +525,24 @@ class Habit_guideAPITestCase(APITestCase):
         response = self.client.get('/habit/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        # Тестирование GET-запроса с авторизацией без права доступа (не модератора)
+        # Тестирование GET-запроса с авторизацией
+        # без права доступа (не модератора)
         autorization(self, user_test)
         response = self.client.get('/habit/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+        self.assertEqual(
+            response.data['detail'],
+            "Вы не являетесь модератором!")
 
-        # Тестирование GET-запроса с авторизацией модератора
+        # Тестирование GET-запроса с авторизацией
+        # модератора
         autorization(self, user_test_moderator)
         response = self.client.get('/habit/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data)
-        self.assertTrue(len(response.data) > 0)  # проверяет наличие в списке 1 и более значений
-
+        self.assertTrue(
+            len(response.data) > 0
+        )  # проверяет наличие в списке 1 и более значений
 
     def test_habit_guide_update(self, user=None):
         # Выбор тестовой привычки
@@ -525,11 +554,15 @@ class Habit_guideAPITestCase(APITestCase):
         response = self.client.put(f'/habit/{pk}/', action_test_up)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        # Тестирование PUT-запроса с авторизацией без права доступа (не модератора)
+        # Тестирование PUT-запроса с авторизацией
+        # без права доступа (не модератора)
         autorization(self, user_test)
         response = self.client.put(f'/habit/{pk}/', action_test_up)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+        self.assertEqual(
+            response.data['detail'],
+            "Вы не являетесь модератором!"
+        )
 
         # Тестирование PUT-запроса с авторизацией модератора
         autorization(self, user_test_moderator)
@@ -551,16 +584,23 @@ class Habit_guideAPITestCase(APITestCase):
         response = self.client.delete(f'/habit/{pk}/', action_test)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-        # Тестирование PUT-запроса с авторизацией без права доступа (не модератора)
+        # Тестирование PUT-запроса с авторизацией
+        # без права доступа (не модератора)
         autorization(self, user_test)
         response = self.client.delete(f'/habit/{pk}/', action_test)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data['detail'], "Вы не являетесь модератором!")
+        self.assertEqual(
+            response.data['detail'],
+            "Вы не являетесь модератором!"
+        )
 
-        # Тестирование PUT-запроса с авторизацией модератора
+        # Тестирование PUT-запроса с авторизацией
+        # модератора
         autorization(self, user_test_moderator)
         response = self.client.delete(f'/habit/{pk}/', action_test)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        # Проверка отсутствия данных привычки пользователя в базе данных (запись не активна)
+        # Проверка отсутствия данных привычки
+        # пользователя в базе данных
+        # (запись не активна)
         data = Habit_guide.objects.get(pk=pk)
         self.assertEqual(data.is_activ, False)
