@@ -2,6 +2,7 @@ import os
 from datetime import timedelta, datetime
 from celery import shared_task
 import telebot
+import pytz
 
 from main.models import Habit_user
 from users.models import User
@@ -37,20 +38,27 @@ def send_telegram_confirmation(user_instance):
 @shared_task
 def check_periodicity():
     # Получаем текущую дату
-    today = datetime.now().date()
+    current_datetime = datetime.now().date()
+
+    # преобразование объекта datetime.date
+    # в объект datetime.datetime с помощью метода datetime.combine().
+    # конвертируем текущую дату в объект datetime с учетом часового пояса
+    now_date = pytz.utc.localize(datetime.combine(current_datetime, datetime.min.time()))
+
+
     # Получаем объект Habit_user только активные позиции
     instance = Habit_user.objects.filter(is_activ=True)
 
     # проходим циклом по всем привычкам
     for i in instance:
         # Определение разницы даты последнего входа пользователя и текущей даты
-        time_diff = today-i.date_of_habit
-        tdays = time_diff.days
+        time_diff = now_date-i.date_of_habit
+        t_days = time_diff.days
         # если разница больше запускается
         # уведомление о времени выполнения действия
-        if timedelta(days=tdays) > i.periodicity:
+        if timedelta(days=t_days) > i.periodicity:
             # дата выполнения привычки меняется на текущую
-            i.date_of_habit = today
+            i.date_of_habit = now_date
             i.save()
             user_instance = User.objects.filter(email=i.email)
             action = instance.action
