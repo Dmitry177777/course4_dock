@@ -444,7 +444,7 @@ class Habit_guideAPITestCase(APITestCase):
         habit_guide.save()
 
         habit_guide = Habit_guide.objects.create(
-            action=action_test_up['action'],
+            action="свирель свистит",
             is_useful=True,
             is_nice=False,
             is_activ=True
@@ -540,9 +540,7 @@ class Habit_guideAPITestCase(APITestCase):
         response = self.client.put(f'/habit/{pk}/', action_test_up)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data)
-
         # обновленный объект habit
-        print(Habit_guide.objects.get(id=pk))
         user_up = Habit_guide.objects.get(id=pk)
         self.assertEqual(user_up.action, action_test_up["action"])
 
