@@ -1,7 +1,6 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
-
-import users
-from users.models import UserRoles
+from rest_framework.permissions import BasePermission
+# import users
+# from users.models import UserRoles
 
 
 class IsModerator(BasePermission):
@@ -20,6 +19,3 @@ class IsHabitUserOwner(BasePermission):
         if request.user == obj.email:
             return True
         return False
-
-
-
