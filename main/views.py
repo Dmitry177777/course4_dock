@@ -1,10 +1,11 @@
+from django.db.models import Q
 from rest_framework import viewsets, generics
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
-from main.permissions import IsModerator, IsHabitUserOwner
+from main.permissions import IsModerator, IsHabitUserOwner, IsPublic
 
 from main.serializers import (HabitGuideVSerializer,
                               HabitUserSerializer,
@@ -86,17 +87,17 @@ class HabitUserCreateAPIView(generics.CreateAPIView):
 class HabitUserListAPIView(generics.ListAPIView):
     serializer_class = HabitUserSerializer
     read_only = True
+    permission_classes = [IsAuthenticated, IsModerator]
     queryset = Habit_user.objects.all()
-    permission_classes = [IsAuthenticated, IsModerator | IsHabitUserOwner]
     pagination_class = MainPaginator
 
     def get_queryset(self):
         user = self.request.user
         role = self.request.user.role
-        if role == UserRoles.MODERATOR:
-            return Habit_user.objects.filter(is_public=True)
+        if role == "MODERATOR":
+            return Habit_user.objects.all()
         else:
-            return Habit_user.objects.filter(email=user)
+            return Habit_user.objects.filter(Q(email=user) | Q(is_public=True))
 
 
 class HabitUserRetrieveAPIView(generics.RetrieveAPIView):
