@@ -5,14 +5,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from main.models import Habit_guide, Habit_user, User
 
 from main.paginators import MainPaginator
-from main.permissions import IsModerator, IsHabitUserOwner, IsPublic
+from main.permissions import IsModerator, IsHabitUserOwner
 
 from main.serializers import (HabitGuideVSerializer,
                               HabitUserSerializer,
                               UserSerializer)
 from main.tasks_celery import send_telegram_confirmation
-
-from users.models import UserRoles
 
 
 class UserCreateAPIView(generics.CreateAPIView):
