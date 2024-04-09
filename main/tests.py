@@ -407,9 +407,9 @@ class Habit_userAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # Проверка отсутствия данных привычки
-        # пользователя в базе данных (запись не активна)
-        data = Habit_user.objects.get(pk=pk)
-        self.assertEqual(data.is_activ, False)
+        # пользователя в базе данных
+        with self.assertRaises(ObjectDoesNotExist):
+            Habit_user.objects.get(pk=pk)
 
 
 class Habit_guideAPITestCase(APITestCase):
