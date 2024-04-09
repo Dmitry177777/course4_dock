@@ -140,9 +140,6 @@ class Habit_user(models.Model):
         self.clean()  # Вызываем валидацию перед сохранением
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        self.is_activ = False
-        self.save()
 
     def create(self, *args, **kwargs):
         new_instance = self.__class__(
