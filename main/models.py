@@ -1,9 +1,15 @@
-from datetime import timedelta
-from django.utils import timezone
+from datetime import timedelta, datetime
+import pytz
+from django.conf import settings
 from users.models import User, NULLABLE
 from django.db import models
 from django.core.exceptions import ValidationError
 # NULLABLE = {'blank':True, 'null': True}
+
+# Получаем часовой пояс проекта
+time_zone = pytz.timezone(settings.TIME_ZONE)
+# получаем текущую дату с учетом часового пояса
+now = datetime.now(time_zone)
 
 
 class Habit_guide(models.Model):
@@ -46,7 +52,7 @@ class Habit_user(models.Model):
     )
     date_of_habit = models.DateTimeField(
         **NULLABLE,
-        default=timezone.now,
+        default=now,
         verbose_name='время выполнения привычки'
     )
     action = models.ForeignKey(
@@ -125,14 +131,14 @@ class Habit_user(models.Model):
                 "только привычки с признаком приятной привычки"
             )
 
-        # Время выполнения должно быть не больше 120 секунд.
+        # Время выполнения должно быть не меньше 120 секунд.
         two_minutes = timedelta(minutes=2)
-        if self.time_to_complete > two_minutes:
+        if self.time_to_complete < two_minutes:
             raise ValidationError(
-                "Время выполнения должно быть не больше 120 секунд")
+                "Время выполнения должно быть не меньше 120 секунд")
         # Нельзя выполнять привычку реже, чем 1 раз в 7 дней.
         one_week = timedelta(days=7)
-        if self.periodicity < one_week:
+        if self.periodicity > one_week:
             raise ValidationError(
                 "Нельзя выполнять привычку реже, чем 1 раз в 7 дней")
 

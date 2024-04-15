@@ -10,6 +10,8 @@ from .serializers import UserSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from dotenv import load_dotenv
 
+from django.conf import settings
+
 # Объявление переменной бота
 load_dotenv()
 TELEGRAM_BOT_API_KEY = os.environ.get('TELEGRAM_BOT_API_KEY')
@@ -37,15 +39,12 @@ def send_telegram_confirmation(user_instance):
 
 @shared_task
 def check_periodicity():
-    # Получаем текущую дату
-    current_datetime = datetime.now().date()
+    # Получаем часовой пояс проекта
+    time_zone = pytz.timezone(settings.TIME_ZONE)
 
-    # преобразование объекта datetime.date
-    # в объект datetime.datetime с помощью метода datetime.combine().
-    # конвертируем текущую дату в объект datetime с учетом часового пояса
-    now_date = pytz.utc.localize(
-        datetime.combine(current_datetime, datetime.min.time())
-    )
+    # получаем текущую дату с учетом часового пояса
+    now = datetime.now(time_zone)
+    print(now)
 
     # Получаем объект Habit_user только активные позиции
     instance = Habit_user.objects.filter(is_activ=True)
@@ -53,20 +52,24 @@ def check_periodicity():
     # проходим циклом по всем привычкам
     for i in instance:
         # Определение разницы даты последнего входа пользователя и текущей даты
-        time_diff = now_date-i.date_of_habit
+        time_diff = now-i.date_of_habit
         t_days = time_diff.days
+
         # если разница больше запускается
         # уведомление о времени выполнения действия
         if timedelta(days=t_days) > i.periodicity:
             # дата выполнения привычки меняется на текущую
-            i.date_of_habit = now_date
+            i.date_of_habit = now
             i.save()
-            user_instance = User.objects.filter(email=i.email)
-            action = instance.action
-            message_text = (f"Привет {user_instance.email},"
-                            f" пора выполнить следующее действие: {action}.")
+
+            user_instance = User.objects.get(email=i.email)
+            serializer = UserSerializer(user_instance)
+            serialized_user = serializer.data
+
+            message_text = (f"Привет {i.email},"
+                            f" пора выполнить следующее действие: {i.action}.")
             # вызавыется функция рассылки
-            send_telegram_message.delay(user_instance, message_text)
+            send_telegram_message.delay(serialized_user, message_text)
 
 
 @shared_task
