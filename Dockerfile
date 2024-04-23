@@ -1,4 +1,6 @@
 FROM python:3
+FROM postgres
+FROM redis
 
 WORKDIR /code
 
@@ -8,4 +10,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD python manage.py runserver 0.0.0.0:8077
+CMD python manage.py runserver 0.0.0.0:8000
