@@ -4,10 +4,8 @@ WORKDIR /code
 
 COPY ./requirements.txt /code/
 
-#RUN pip install -r requirements.txt
-#RUN pip install postgres
-#RUN pip install redis
+RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD python manage.py runserver
+CMD ["python", "manage.py", "runserver"]
