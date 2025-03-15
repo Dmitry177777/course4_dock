@@ -1,20 +1,44 @@
 version: "3"
 
 services:
+
+  # описание сервиса базы данных
   db:
-    image: postgresql
+    image: postgres:16-alpine
+
+    # передача всех переменных окружения в контейнерн (должны быть правильно поименованы в проекте)
+    #env_file:
+    # - .env
+
+    # вручную прописываюся переменные со ссылкой на действующее окружение (.env)
     environment:
       POSTGRES_PASSWORD: ${BD_PASSWORD}
       POSTGRES_USER: ${BD_USER}
       POSTGRES_DB: ${BD_NAME}
-    expose:
-    volumes:
-    healthcheck:
-      test:
-        interval:
-        retries:
-        timeout:
 
-  app:
-    image: backend
+    # expose определяет порты без публикации на хост-машине — доступны только для связанных служб.
+    expose:
+      - "5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+    # проверка на корректный запуск контейнера с условием проверки
+    healthcheck:
+      test: ["CMD-SHELL", "-c", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  # описание сервера приложения
+  backend:
+    # наименование образа не обязательное, т.к. он не скачивается из репазитория а собирается в проекте
+    image: app
+
+    # собрание образа на основании Dockerfile из папки в которой находится файл docker-compose
     build: .
+
+    # tty определяет интерактивный режим
+    tty: true
+
+volumes:
+  db-data:
