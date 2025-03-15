@@ -2,6 +2,19 @@ version: "3"
 
 services:
   db:
-    image: postgres
-    env_file:
-      - .env
+    image: postgresql
+    environment:
+      POSTGRES_PASSWORD: ${BD_PASSWORD}
+      POSTGRES_USER: ${BD_USER}
+      POSTGRES_DB: ${BD_NAME}
+    expose:
+    volumes:
+    healthcheck:
+      test:
+        interval:
+        retries:
+        timeout:
+
+  app:
+    image: backend
+    build: .
