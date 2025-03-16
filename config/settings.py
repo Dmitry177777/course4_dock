@@ -100,12 +100,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # take environment variables from .env.
-BD_ENGINE = os.environ.get('POSTGRES_ENGINE')
-BD_NAME = os.environ.get('POSTGRES_NAME')
-BD_USER = os.environ.get('POSTGRES_USER')
-BD_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
-BD_HOST = os.environ.get('POSTGRES_HOST')
-BD_PORT = os.environ.get('POSTGRES_PORT')
+POSTGRES_ENGINE= os.environ.get('POSTGRES_ENGINE')
+POSTGRES_NAME = os.environ.get('POSTGRES_NAME')
+POSTGRES_USER = os.environ.get('POSTGRES_USER')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
 
 
 DATABASES = {
