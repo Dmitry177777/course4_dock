@@ -100,22 +100,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # take environment variables from .env.
-BD_ENGINE = os.environ.get('BD_ENGINE')
-BD_NAME = os.environ.get('BD_NAME')
-BD_USER = os.environ.get('BD_USER')
-BD_PASSWORD = os.environ.get('BD_PASSWORD')
-BD_HOST = os.environ.get('BD_HOST')
-BD_PORT = os.environ.get('BD_PORT')
+# BD_ENGINE = os.environ.get('BD_ENGINE')
+# BD_NAME = os.environ.get('BD_NAME')
+# BD_USER = os.environ.get('BD_USER')
+# BD_PASSWORD = os.environ.get('BD_PASSWORD')
+# BD_HOST = os.environ.get('BD_HOST')
+# BD_PORT = os.environ.get('BD_PORT')
 
 
 DATABASES = {
     'default': {
-        'ENGINE': BD_ENGINE,
-        'NAME': BD_NAME,
-        'USER': BD_USER,
-        'PASSWORD': BD_PASSWORD,
-        'HOST': BD_HOST,
-        'PORT': BD_PORT
+        'ENGINE': BPOSTGRES_ENGINE,
+        'NAME': POSTGRES_NAME,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': POSTGRES_HOST,
+        'PORT': POSTGRES_PORT
     }
 }
 

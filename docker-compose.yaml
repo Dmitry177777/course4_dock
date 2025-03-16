@@ -7,14 +7,14 @@ services:
     image: postgres:16-alpine
 
     # передача всех переменных окружения в контейнерн (должны быть правильно поименованы в проекте)
-    #env_file:
-    # - .env
+    env_file:
+     - .env
 
     # вручную прописываюся переменные со ссылкой на действующее окружение (.env)
-    environment:
-      POSTGRES_PASSWORD: ${BD_PASSWORD}
-      POSTGRES_USER: ${BD_USER}
-      POSTGRES_DB: ${BD_NAME}
+#    environment:
+#      POSTGRES_PASSWORD: ${BD_PASSWORD}
+#      POSTGRES_USER: ${BD_USER}
+#      POSTGRES_DB: ${BD_NAME}
 
     # expose определяет порты без публикации на хост-машине — доступны только для связанных служб.
     expose:
@@ -45,7 +45,7 @@ services:
       - "8000:8000"
 
     # команда для запуска приложения
-    command: sh -c "python manage.py migrate&&python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
     # проверка на успешный запуск db приложение запустится только после успешно сформированной базы данных
     depends_on:
