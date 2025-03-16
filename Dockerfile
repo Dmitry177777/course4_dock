@@ -1,5 +1,5 @@
 ##  Задаём родительский (главный) образ
-FROM python:3
+FROM python:3.13
 
 ## Устанавливаем рабочую директорию для инструкции CMD и ENTRYPOINT
 WORKDIR /code
@@ -9,7 +9,7 @@ COPY ./requirements.txt /code/
 
 
 # Install Pillow dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
     build-essential \
     libjpeg-dev \
     zlib1g-dev \
