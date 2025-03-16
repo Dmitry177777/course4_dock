@@ -9,7 +9,8 @@ COPY ./requirements.txt /code/
 
 
 # Install Pillow dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
+    build-essential \
     libjpeg-dev \
     zlib1g-dev \
     libfreetype6-dev \
