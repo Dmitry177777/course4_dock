@@ -24,7 +24,7 @@ services:
 
     # проверка на корректный запуск контейнера с условием проверки
     healthcheck:
-      test: ["CMD-SHELL", "-c", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "-c", "pg_isready -U $POSTGRES_USER"]
       interval: 10s
       retries: 5
       timeout: 5s
