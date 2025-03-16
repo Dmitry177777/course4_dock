@@ -18,7 +18,7 @@ services:
 
     # expose определяет порты без публикации на хост-машине — доступны только для связанных служб.
     expose:
-      - "5432"
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
 
@@ -30,7 +30,7 @@ services:
       timeout: 5s
 
   # описание действий с приложением
-  backend:
+  app:
     # наименование образа не обязательное, т.к. он не скачивается из репазитория а собирается в проекте
     image: app
 
@@ -52,7 +52,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - .:/backend
+      - .:/app
 
 volumes:
   db-data:

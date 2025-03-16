@@ -2,10 +2,10 @@
 FROM python:3.10.12
 
 ## Устанавливаем рабочую директорию для инструкции CMD и ENTRYPOINT
-WORKDIR /code
+WORKDIR /app
 
 ## Копируем файлы и директории в контейнер
-COPY ./requirements.txt /code/
+COPY ./requirements.txt /app/
 
 
 ## Запускаем команды, создаём слой образа.
