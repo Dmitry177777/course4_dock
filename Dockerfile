@@ -1,5 +1,5 @@
 ##  Задаём родительский (главный) образ
-FROM python:3
+FROM python:3.10-slim-buster
 
 ## Устанавливаем рабочую директорию для инструкции CMD и ENTRYPOINT
 WORKDIR /code
@@ -19,6 +19,7 @@ RUN apt update && apt install -y \
     tcl8.6-dev \
     tk8.6-dev
 
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade setuptools wheel
 
 ## Запускаем команды, создаём слой образа. 
