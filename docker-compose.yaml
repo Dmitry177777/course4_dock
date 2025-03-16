@@ -5,6 +5,8 @@ services:
     image: redis:latest
     # перезапуск при падении сервиса
     restart: on-failure
+    expose:
+      - "6379"
 
   # postgres
   db:
@@ -40,6 +42,8 @@ services:
     # наименование образа не обязательное, т.к. он не скачивается из репазитория а собирается в проекте
     #image: app
 
+    env_file:
+     - .env
     # собрание образа на основании Dockerfile из папки в которой находится файл docker-compose
     build: .
 
@@ -61,6 +65,8 @@ services:
       - .:/app
 
   celery:
+    env_file:
+      - .env
     build: .
     tty: true
     command: celery -A config worker -l INFO
@@ -73,6 +79,8 @@ services:
       - db
 
   celery-beat:
+    env_file:
+      - .env
     build: .
     tty: true
     command: celery -A config beat -l INFO
