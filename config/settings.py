@@ -110,7 +110,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': BPOSTGRES_ENGINE,
+        'ENGINE': POSTGRES_ENGINE,
         'NAME': POSTGRES_NAME,
         'USER': POSTGRES_USER,
         'PASSWORD': POSTGRES_PASSWORD,

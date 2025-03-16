@@ -45,7 +45,7 @@ services:
       - "8000:8000"
 
     # команда для запуска приложения
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
 
     # проверка на успешный запуск db приложение запустится только после успешно сформированной базы данных
     depends_on:
