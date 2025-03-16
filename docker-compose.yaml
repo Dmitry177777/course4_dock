@@ -18,13 +18,13 @@ services:
 
     # expose определяет порты без публикации на хост-машине — доступны только для связанных служб.
     expose:
-      - "5432:5432"
+      - "5432"
     volumes:
       - db-data:/var/lib/postgresql/data
 
     # проверка на корректный запуск контейнера с условием проверки
     healthcheck:
-      test: ["CMD-SHELL", "-c", "pg_isready -U $POSTGRES_USER"]
+      test: ["CMD-SHELL", "-c", "pg_isready -U $POSTGRES_USER $POSTGRES_PASSWORD"]
       interval: 10s
       retries: 5
       timeout: 5s
@@ -32,7 +32,7 @@ services:
   # описание действий с приложением
   app:
     # наименование образа не обязательное, т.к. он не скачивается из репазитория а собирается в проекте
-    image: app
+    #image: app
 
     # собрание образа на основании Dockerfile из папки в которой находится файл docker-compose
     build: .
