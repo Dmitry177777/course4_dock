@@ -52,9 +52,10 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - .:/app
+      - app-data:/app
 
 volumes:
   db-data:
+  app-data:
 
 
